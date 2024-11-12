@@ -34,7 +34,10 @@ const tmdbEndpoints = {
     personDetail: ({ personId }) => generateURL(`person/${personId}`),
 
     personMedias: ({ personId }) =>
-        generateURL(`person/${personId}/combined_credits`)
+        generateURL(`person/${personId}/combined_credits`),
+
+    limitedList: ({ page, language }) =>
+        generateURL(`list/${process.env.DEFAULT_LIST_ID}`, { page, language })
 }
 
 module.exports = tmdbEndpoints

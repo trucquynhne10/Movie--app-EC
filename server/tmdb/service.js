@@ -36,7 +36,10 @@ const tmdbService = {
         await axiosIns.get(tmdbEndpoints.personDetail({ personId })),
 
     getPersonMedias: async ({ personId }) =>
-        await axiosIns.get(tmdbEndpoints.personMedias({ personId }))
+        await axiosIns.get(tmdbEndpoints.personMedias({ personId })),
+
+    getLimitedList: async ({ page, language }) =>
+        await axiosIns.get(tmdbEndpoints.limitedList({ page, language }))
 }
 
 module.exports = tmdbService
