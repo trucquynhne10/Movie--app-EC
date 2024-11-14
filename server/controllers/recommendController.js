@@ -7,12 +7,29 @@ const recommendController = {
         try {
             const { page, language } = req.query
 
+            // Fetch genres
+            const genres = await tmdbService.getMediaGenres({
+                language,
+                mediaType: 'movie'
+            })
+            const genresMap = []
+            genres.data.genres.forEach(({ id, name }) => (genresMap[id] = name))
+
+            // Fetch movie list
             const response = await tmdbService.getLimitedList({
                 page,
                 language
             })
 
-            res.status(200).json({ data: response.data.items })
+            // Map each item with gerne names
+            const data = response.data.items.map((item) => {
+                return {
+                    ...item,
+                    genre_names: item.genre_ids.map((id) => genresMap[id])
+                }
+            })
+
+            res.status(200).json({ data: data })
         } catch (err) {
             res.status(500).json({
                 message: err.message ?? DEFAULT_SERVER_ERROR_MSG

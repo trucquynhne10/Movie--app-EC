@@ -29,8 +29,12 @@ const mediaController = {
     getGenres: async (req, res) => {
         try {
             const { mediaType } = req.params
+            const { language } = req.query
 
-            const response = await tmdbService.getMediaGenres({ mediaType })
+            const response = await tmdbService.getMediaGenres({
+                mediaType,
+                language: language || 'en'
+            })
 
             res.status(200).json({ data: response?.data })
         } catch (err) {

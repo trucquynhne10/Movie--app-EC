@@ -14,7 +14,8 @@ const tmdbEndpoints = {
     mediaDetail: ({ mediaType, mediaId }) =>
         generateURL(`${mediaType}/${mediaId}`),
 
-    mediaGenres: ({ mediaType }) => generateURL(`genre/${mediaType}/list`),
+    mediaGenres: ({ mediaType, language }) =>
+        generateURL(`genre/${mediaType}/list`, { language }),
 
     mediaCredits: ({ mediaType, mediaId }) =>
         generateURL(`${mediaType}/${mediaId}/credits`),
