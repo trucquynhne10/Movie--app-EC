@@ -10,8 +10,8 @@ const tmdbService = {
     getMediaDetail: async ({ mediaType, mediaId }) =>
         await axiosIns.get(tmdbEndpoints.mediaDetail({ mediaType, mediaId })),
 
-    getMediaGenres: async ({ mediaType }) =>
-        await axiosIns.get(tmdbEndpoints.mediaGenres({ mediaType })),
+    getMediaGenres: async ({ mediaType, language }) =>
+        await axiosIns.get(tmdbEndpoints.mediaGenres({ mediaType, language })),
 
     getMediaCredits: async ({ mediaType, mediaId }) =>
         await axiosIns.get(tmdbEndpoints.mediaCredits({ mediaType, mediaId })),
