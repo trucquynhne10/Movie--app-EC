@@ -8,6 +8,7 @@ import MyReviewsPage from '../pages/MyReviewsPage'
 import MyFavoritesPage from '../pages/MyFavoritesPage'
 import UpdatePasswordPage from '../pages/UpdatePasswordPage'
 import NotFoundPage from '../pages/NotFoundPage'
+import PlanPage from '../pages/PlanPage'
 
 const routes = [
     {
@@ -57,6 +58,14 @@ const routes = [
     {
         path: '*',
         element: <NotFoundPage />
+    },
+    {
+        path: '/plan',
+        element: (
+            <AuthProtector>
+                <PlanPage />
+            </AuthProtector>
+        )
     }
 ]
 

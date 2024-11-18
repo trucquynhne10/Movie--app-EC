@@ -40,6 +40,11 @@ export const NAV_ITEMS = [
         label: 'search',
         path: '/search',
         icon: <FontAwesomeIcon icon={faMagnifyingGlass} />
+    },
+    {
+        label: 'plan',
+        path: '/plan',
+        icon: <FontAwesomeIcon icon={faHeart} size='lg' />
     }
 ]
 
@@ -107,7 +112,7 @@ const Navbar = () => {
 
     return (
         <header
-            className={`sticky top-0 z-10 flex h-[72px] items-center justify-between bg-black px-5 lg:px-6 ${
+            className={`sticky top-0 z-10 flex h-[72px] items-center justify-between bg-black px-5 lg:px-6 z-50 ${
                 transparentBg && !isLoading ? 'bg-transparent' : 'bg-black'
             }`}
         >
