@@ -14,6 +14,7 @@ const personRoute = require('./routes/personRoute')
 const reviewRoute = require('./routes/reviewRoute')
 const planRoute = require('./routes/planRoute')
 const recommendRoute = require('./routes/recommendRoute')
+const paymentRoute = require('./routes/paymentRoute')
 
 // App instance
 const app = express()
@@ -35,6 +36,7 @@ app.use('/person', personRoute)
 app.use('/reviews', reviewRoute)
 app.use('/plans', planRoute)
 app.use('/recommend', recommendRoute)
+app.use('/payment', paymentRoute)
 app.use('/:mediaType', mediaRoute)
 
 // Handle 404 page
