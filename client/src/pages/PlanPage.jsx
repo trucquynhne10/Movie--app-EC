@@ -1,137 +1,201 @@
-﻿import { useState, useEffect } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCartShopping, faCreditCard, faCircleDot, faCircle } from '@fortawesome/free-solid-svg-icons'
+import {
+    faCartShopping,
+    faCreditCard,
+    faCircleDot,
+    faCircle
+} from '@fortawesome/free-solid-svg-icons'
 import useTitle from '../hooks/useTitle'
 import useBodyBgColor from '../hooks/useBodyBgColor'
-import userService from '../services/userService'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsGlobalLoading } from '../redux/slices/appSlice'
-import { axiosPublicIns } from '../libs/axios'
-
+import { axiosPublicIns, axiosPrivateIns } from '../libs/axios'
+import { paymentOptions } from '../utils/const'
 
 const PlanPage = () => {
-    useTitle('FlqCine | Search')
-    useBodyBgColor('#101010')
-    useEffect(() => {
-        window.scrollTo(0, 0)
-    }, [])
     const dispatch = useDispatch()
-    const [selectedMonth, setSelectedMonth] = useState('');
-    const [plans, setPlans] = useState([Object]);        // State lưu danh sách plans
+    const userInfo = useSelector((state) => state.user.user)
 
+    const [plans, setPlans] = useState([Object])
+    const [totalAmount, setTotalAmount] = useState(0)
+    const [selectedMonth, setSelectedMonth] = useState('')
+    const [selectedPayment, setSelectedPayment] = useState('momo')
 
+    // Today
+    const formattedCurrentDate = useMemo(() => {
+        const currentDate = new Date()
+        return currentDate.toLocaleDateString('vi-VN')
+    }, [])
+
+    // Calculate next payment date
+    const formattedNextPaymentDate = useMemo(() => {
+        const currentDate = new Date()
+
+        const selectedPlan = plans.find(
+            (option) => option._id === selectedMonth
+        )
+
+        const nextPaymentDate = selectedPlan
+            ? new Date(
+                  currentDate.setMonth(
+                      currentDate.getMonth() + selectedPlan.month
+                  )
+              )
+            : null
+
+        return nextPaymentDate?.toLocaleDateString('vi-VN') || 'Not selected'
+    }, [selectedMonth])
+
+    // Handle option changed
+    const handlePaymentSelect = (payment) => {
+        setSelectedPayment(payment)
+    }
+
+    const handleMonthSelect = (id) => {
+        setSelectedMonth(id)
+        const selectedOption = plans.find((option) => option._id === id)
+        if (selectedOption) {
+            setTotalAmount(selectedOption.price)
+        }
+    }
+
+    // Handle payment submit
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        dispatch(setIsGlobalLoading(true))
+
+        const paymentUri = paymentOptions.find(
+            ({ id }) => id === selectedPayment
+        ).uri
+        const bodyRequest = {
+            finalPrice: totalAmount,
+            planId: selectedMonth
+        }
+
+        try {
+            const data = await axiosPrivateIns.post(paymentUri, bodyRequest)
+
+            window.location.href = data.data.data.payUrl
+        } catch (error) {
+            console.error(error)
+        } finally {
+            dispatch(setIsGlobalLoading(false))
+        }
+    }
+
+    // Load page
+    useTitle('FlqCine | Payment')
+    useBodyBgColor('#101010')
     useEffect(() => {
         const fetchData = async () => {
             try {
                 dispatch(setIsGlobalLoading(true))
-              const plans = await axiosPublicIns.get("/plans");
-              setPlans(plans.data.data);
+
+                const plans = await axiosPublicIns.get('/plans')
+
+                setPlans(plans.data.data)
+                setSelectedMonth(plans.data.data[0]._id)
+                setTotalAmount(plans.data.data[0].price)
             } catch (error) {
-              console.error(error); // Kiểm tra lỗi xảy ra
-            }
-            finally {
+                console.error(error)
+            } finally {
                 dispatch(setIsGlobalLoading(false))
             }
-          };
-        fetchData();
-    }, []);
-    const userInfo = useSelector((state) => state.user.user)
-    console.log('userser',userInfo)
-    console.log('plans',plans)
-
-
-    const currentDate = new Date();
-    const formattedCurrentDate = currentDate.toLocaleDateString('vi-VN'); 
-
-    // Tính toán ngày next payment
-    const selectedPlan = plans.find((option) => option._id === selectedMonth);
-    console.log( 'month',selectedPlan)
-    const nextPaymentDate = selectedPlan
-        ? new Date(currentDate.setMonth(currentDate.getMonth() + selectedPlan.month))
-        : null;
-    const formattedNextPaymentDate = nextPaymentDate?.toLocaleDateString('vi-VN') || 'Not selected';
-
-    const paymentOptions = [
-        { id: 'creditCard', label: 'Credit Card', price: 'Credit Card' },
-        { id: 'atmCard', label: 'ATM Card', price: 'ATM Card' },
-        { id: 'momo', label: 'Ví MoMo', price: 'MoMo' },
-    ]
-
-    const [selectedPayment, setSelectedPayment] = useState('');
-    const handlePaymentSelect = (payment) => {
-        setSelectedPayment(payment);
-    }
-
-    const [totalAmount, setTotalAmount] = useState(0); 
-    
-    const handleMonthSelect = (id) => {
-        setSelectedMonth(id);
-        const selectedOption = plans.find((option) => option._id === id);
-        if (selectedOption) {
-          setTotalAmount(selectedOption.price);
         }
-    }
-
-    // // all plans
-    // const plans = await axiosPublicIns.get("/plans");
+        fetchData()
+        window.scrollTo(0, 0)
+    }, [])
 
     return (
         <div>
-            <main className='mx-auto max-w-[1366px] px-4 py-8'>
-                <div className='mb-10 flex flex-start items-center justify-center gap-48'>
-                    <div className='justify-items-center radio-center relative z-10'>
-                        <div className='place-content-center'>
-                            <FontAwesomeIcon icon={faCartShopping} size='xl' className='rounded-full bg-gradient-main px-5 py-5 radio-[14px] uppercase tracking-wider text-white hover:opacity-90'/>
+            <main className="mx-auto max-w-[1366px] px-4 py-8">
+                <div className="flex-start mb-10 flex items-center justify-center gap-48">
+                    <div className="radio-center relative z-10 justify-items-center">
+                        <div className="place-content-center">
+                            <FontAwesomeIcon
+                                icon={faCartShopping}
+                                size="xl"
+                                className="radio-[14px] rounded-full bg-gradient-main px-5 py-5 uppercase tracking-wider text-white hover:opacity-90"
+                            />
                         </div>
-                        <div className='place-content-center'>
-                            <div className='text-white py-2'>Choose package and Payment method</div>
+                        <div className="place-content-center">
+                            <div className="py-2 text-white">
+                                Choose package and Payment method
+                            </div>
                         </div>
                     </div>
-                    <div className='flex justify-end'>
-                        <div className='absolute mt-8 w-[400px] pr-5 z-0'>
-                            <div className='bg-slate-200 block h-[2px]'></div>
+                    <div className="flex justify-end">
+                        <div className="absolute z-0 mt-8 w-[400px] pr-5">
+                            <div className="block h-[2px] bg-slate-200"></div>
                         </div>
-                        <div className='flex-row justify-items-center radio-center z-10'>
-                            <div className='place-content-center'>
-                                <FontAwesomeIcon icon={faCreditCard} size='xl' className='rounded-full bg-zinc-700 px-5 py-5 radio-[14px] font-medium uppercase tracking-wider text-white hover:opacity-90'/>
+                        <div className="radio-center z-10 flex-row justify-items-center">
+                            <div className="place-content-center">
+                                <FontAwesomeIcon
+                                    icon={faCreditCard}
+                                    size="xl"
+                                    className="radio-[14px] rounded-full bg-zinc-700 px-5 py-5 font-medium uppercase tracking-wider text-white hover:opacity-90"
+                                />
                             </div>
                             <div>
-                                <div className='text-white py-2'>Confirm</div>
+                                <div className="py-2 text-white">Confirm</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <form action="">
-                    <div className='flex justify-center mx-5'>
-                        <div className='flex-col w-full px-5 mx-3'>
+                <form onSubmit={(e) => handleSubmit(e)}>
+                    <div className="mx-5 flex justify-center">
+                        <div className="mx-3 w-full flex-col px-5">
                             <div className="mt-2">
                                 <div className="flex-col">
                                     <div>
-                                        <p className="text-white p-4 text-xl font-bold">Film package:</p>
+                                        <p className="p-4 text-xl font-bold text-white">
+                                            Film package:
+                                        </p>
                                     </div>
                                     <div className="flex-col gap-1">
-                                        {plans.map((option) => (
+                                        {plans.map((option, index) => (
                                             <div
-                                            key={option._id}
-                                            className={`flex justify-between p-4 rounded-md mt-3 cursor-pointer 
-                                                ${selectedMonth === option._id ? 'bg-gradient-main text-white' : 'bg-zinc-800 text-slate-50'}
+                                                key={index}
+                                                className={`mt-3 flex cursor-pointer justify-between rounded-md p-4 
+                                                ${
+                                                    selectedMonth === option._id
+                                                        ? 'bg-gradient-main text-white'
+                                                        : 'bg-zinc-800 text-slate-50'
+                                                }
                                                 hover:bg-gradient-main hover:text-white`}
-                                            onClick={() => handleMonthSelect(option._id)}
+                                                onClick={() =>
+                                                    handleMonthSelect(
+                                                        option._id
+                                                    )
+                                                }
                                             >
-                                            <div className="flex items-center">
-                                                <input
-                                                type="radio"
-                                                name="month"
-                                                className="hidden"
-                                                checked={selectedMonth === option._id}
-                                                onChange={() => handleMonthSelect(option._id)}
-                                                />
-                                                <FontAwesomeIcon
-                                                icon={selectedMonth === option._id ? faCircleDot : faCircle}
-                                                className="mr-2"
-                                                />
-                                                <p>{option.name}</p>
-                                            </div>
+                                                <div className="flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="month"
+                                                        className="hidden"
+                                                        checked={
+                                                            selectedMonth ===
+                                                            option._id
+                                                        }
+                                                        onChange={() =>
+                                                            handleMonthSelect(
+                                                                option._id
+                                                            )
+                                                        }
+                                                    />
+                                                    <FontAwesomeIcon
+                                                        icon={
+                                                            selectedMonth ===
+                                                            option._id
+                                                                ? faCircleDot
+                                                                : faCircle
+                                                        }
+                                                        className="mr-2"
+                                                    />
+                                                    <p>{option.name}</p>
+                                                </div>
                                                 <div>
                                                     <p>{option.price}VND</p>
                                                 </div>
@@ -143,33 +207,60 @@ const PlanPage = () => {
                             <div className="mt-8">
                                 <div className="flex-col">
                                     <div>
-                                        <p className="text-white p-4 text-xl font-bold">Payment method:</p>
+                                        <p className="p-4 text-xl font-bold text-white">
+                                            Payment method:
+                                        </p>
                                     </div>
                                     <div className="flex-col gap-1">
                                         {paymentOptions.map((option) => (
                                             <div
-                                            key={option.id}
-                                            className={`flex justify-between p-4 rounded-md mt-3 cursor-pointer 
-                                                ${selectedPayment === option.id ? 'bg-gradient-main text-white' : 'bg-zinc-800 text-slate-50'}
+                                                key={option.id}
+                                                className={`mt-3 flex cursor-pointer justify-between rounded-md p-4 
+                                                ${
+                                                    selectedPayment ===
+                                                    option.id
+                                                        ? 'bg-gradient-main text-white'
+                                                        : 'bg-zinc-800 text-slate-50'
+                                                }
                                                 hover:bg-gradient-main hover:text-white`}
-                                            onClick={() => handlePaymentSelect(option.id)}
+                                                onClick={() =>
+                                                    handlePaymentSelect(
+                                                        option.id
+                                                    )
+                                                }
                                             >
-                                            <div className="flex items-center">
-                                                <input
-                                                type="radio"
-                                                name="payment"
-                                                className="hidden"
-                                                checked={selectedPayment === option.id}
-                                                onChange={() => handlePaymentSelect(option.id)}
-                                                />
-                                                <FontAwesomeIcon
-                                                icon={selectedPayment === option.id ? faCircleDot : faCircle}
-                                                className="mr-2"
-                                                />
-                                                <p>{option.label}</p>
-                                            </div>
+                                                <div className="flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="payment"
+                                                        className="hidden"
+                                                        checked={
+                                                            selectedPayment ===
+                                                            option.id
+                                                        }
+                                                        onChange={() =>
+                                                            handlePaymentSelect(
+                                                                option.id
+                                                            )
+                                                        }
+                                                    />
+                                                    <FontAwesomeIcon
+                                                        icon={
+                                                            selectedPayment ===
+                                                            option.id
+                                                                ? faCircleDot
+                                                                : faCircle
+                                                        }
+                                                        className="mr-2"
+                                                    />
+                                                    <p>{option.label}</p>
+                                                </div>
                                                 <div>
-                                                    <p>{option.price}</p>
+                                                    <img
+                                                        src={option.imgSrc}
+                                                        alt={option.label}
+                                                        className="w-12 rounded"
+                                                    />
                                                 </div>
                                             </div>
                                         ))}
@@ -177,17 +268,23 @@ const PlanPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-zinc-800 w-full md:w-1/2 p-5 mx-3 text-slate-50">
-                            <div className="text-center text-3xl font-semibold pb-3">Payment Information</div>
+                        <div className="mx-3 w-full bg-zinc-800 p-5 text-slate-50 md:w-1/2">
+                            <div className="pb-3 text-center text-3xl font-semibold">
+                                Payment Information
+                            </div>
                             <div className="flex justify-between py-2">
                                 <p>FLQ account</p>
                                 <p>{userInfo.username}</p>
                             </div>
                             <div className="flex justify-between py-2">
                                 <p>Service</p>
-                                <p>{plans.find((option) => option._id === selectedMonth)?.name || 'Not selected'}</p>
+                                <p>
+                                    {plans.find(
+                                        (option) => option._id === selectedMonth
+                                    )?.name || 'Not selected'}
+                                </p>
                             </div>
-                            <div className='flex justify-between py-2'>
+                            <div className="flex justify-between py-2">
                                 <p></p>
                                 <p>No auto-renewal</p>
                             </div>
@@ -195,28 +292,38 @@ const PlanPage = () => {
                                 <p>Value</p>
                                 <p>{totalAmount.toLocaleString()}đ</p>
                             </div>
-                            <div className='flex justify-between py-2'>
+                            <div className="flex justify-between py-2">
                                 <p>Effective Date</p>
                                 <p>{formattedCurrentDate}</p>
                             </div>
-                            <div className='flex justify-between py-2'>
+                            <div className="flex justify-between py-2">
                                 <p>Next payment</p>
                                 <p>{formattedNextPaymentDate}</p>
                             </div>
-                            <hr className="py-2 mt-2" />
+                            <hr className="mt-2 py-2" />
                             <div className="flex justify-between py-2">
                                 <p>Total payment</p>
-                                <p className="text-xl font-semibold text-orange-600">{totalAmount.toLocaleString()}VND</p>
+                                <p className="text-xl font-semibold text-orange-600">
+                                    {totalAmount.toLocaleString()}VND
+                                </p>
                             </div>
-                            <div className="text-center py-3">
+                            <div className="py-3 text-center">
                                 <button
-                                    type="submit"
-                                    disabled={!selectedMonth || !selectedPayment}
-                                    className={`p-3 w-full rounded-md ${(selectedMonth && selectedPayment) ? 'bg-gradient-main' : 'bg-gray-600 cursor-not-allowed'}`}
+                                    disabled={
+                                        !selectedMonth || !selectedPayment
+                                    }
+                                    className={`w-full rounded-md p-3 ${
+                                        selectedMonth && selectedPayment
+                                            ? 'bg-gradient-main'
+                                            : 'cursor-not-allowed bg-gray-600'
+                                    }`}
                                 >
                                     Pay
                                 </button>
-                                <p className="py-3">By making payment, you agree to the terms of use and policies of FLQ CINE</p>
+                                <p className="py-3">
+                                    By making payment, you agree to the terms of
+                                    use and policies of FLQ CINE
+                                </p>
                             </div>
                         </div>
                     </div>
