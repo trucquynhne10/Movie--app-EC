@@ -15,6 +15,7 @@ const reviewRoute = require('./routes/reviewRoute')
 const planRoute = require('./routes/planRoute')
 const recommendRoute = require('./routes/recommendRoute')
 const paymentRoute = require('./routes/paymentRoute')
+const queueRoute = require('./routes/queueRoute')
 
 // App instance
 const app = express()
@@ -37,6 +38,7 @@ app.use('/reviews', reviewRoute)
 app.use('/plans', planRoute)
 app.use('/recommend', recommendRoute)
 app.use('/payment', paymentRoute)
+app.use('/admin/queues', queueRoute)
 app.use('/:mediaType', mediaRoute)
 
 // Handle 404 page
