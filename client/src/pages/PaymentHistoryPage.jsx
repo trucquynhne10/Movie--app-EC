@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { axiosPrivateIns } from '../libs/axios'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { setIsGlobalLoading } from '../redux/slices/appSlice'
 import useTitle from '../hooks/useTitle'
 import moment from 'moment'
@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom'
 
 const PaymentHistory = () => {
     const dispatch = useDispatch()
-    const userInfo = useSelector((state) => state.user.user)
 
     const [orders, setOrders] = useState()
 
@@ -42,7 +41,7 @@ const PaymentHistory = () => {
 
     return (
         <main className="mx-auto max-w-[1366px] px-4 py-8 text-white">
-            {!orders ? (
+            {!orders || !orders.length ? (
                 <div className="-mt-20 flex h-screen items-center justify-center">
                     <p>
                         No payment to show.

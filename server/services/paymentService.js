@@ -51,32 +51,46 @@ const paymentService = {
         const order = await Order.findById(orderId).populate(['plan', 'user'])
         if (!order) return
 
-        // Handle payment success
-        if (resultCode === 0) {
-            order.status = 'PAID'
-
-            // Create user plan
-            const startDate = new Date()
-            const finishDate = new Date()
-            finishDate.setMonth(finishDate.getMonth() + order.plan.month)
-
-            const userPlan = await UserPlan.create({
-                startDate,
-                finishDate,
-                status: 'VALID',
-                plan: order.plan._id,
-                user: order.user._id,
-                order: order._id
-            })
-
-            // Update user plans
-            order.user.plans.push(userPlan._id)
-            await order.user.save()
+        // Handle payment fail
+        if (resultCode !== 0) {
+            order.status = 'CANCELED'
+            return await order.save()
         }
 
-        // Handle payment fail
-        if (resultCode !== 0) order.status = 'CANCELED'
+        // Handle payment success
+        const validMembership = await UserPlan.findOne({
+            user: order.user._id,
+            status: 'VALID'
+        })
 
+        order.status = 'PAID'
+
+        // Add month to current membership
+        if (validMembership) {
+            const finishDate = new Date(validMembership.finishDate)
+            finishDate.setMonth(finishDate.getMonth() + order.plan.month)
+
+            validMembership.finishDate = finishDate
+            await validMembership.save()
+            return await order.save()
+        }
+
+        // Create new membership
+        const startDate = new Date()
+        const finishDate = new Date()
+        finishDate.setMonth(finishDate.getMonth() + order.plan.month)
+
+        const userPlan = await UserPlan.create({
+            startDate,
+            finishDate,
+            status: 'VALID',
+            plan: order.plan._id,
+            user: order.user._id,
+            order: order._id
+        })
+
+        order.user.plans.push(userPlan._id)
+        await order.user.save()
         await order.save()
     },
 

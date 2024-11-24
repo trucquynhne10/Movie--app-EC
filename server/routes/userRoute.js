@@ -20,5 +20,6 @@ router.delete(
 
 router.get('/orders', verifyJWT, userController.getAllOrders)
 router.get('/orders/:orderId', verifyJWT, userController.getOrder)
+router.get('/membership', verifyJWT, userController.getMembership)
 
 module.exports = router

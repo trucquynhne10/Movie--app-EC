@@ -22,8 +22,10 @@ const PlanPage = () => {
     const [totalAmount, setTotalAmount] = useState(0)
     const [selectedMonth, setSelectedMonth] = useState('')
     const [selectedPayment, setSelectedPayment] = useState('momo')
-    const [isOpen, setIsOpen] = useState(false)
-    const [pendingPayment, setPendingPayment] = useState({})
+    const [pendingModal, setPendingModal] = useState(false)
+    const [membershipModal, setMembershipModal] = useState(false)
+    const [pendingPayment, setPendingPayment] = useState()
+    const [membership, setMembership] = useState()
 
     // Today
     const formattedCurrentDate = useMemo(() => {
@@ -64,12 +66,19 @@ const PlanPage = () => {
     }
 
     // Handle payment submit
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
 
         // Return if there is a pending payment
-        if (pendingPayment) return setIsOpen(true)
+        if (pendingPayment) return setPendingModal(true)
 
+        // Return if user already have membership
+        if (membership) return setMembershipModal(true)
+
+        processPayment()
+    }
+
+    const processPayment = async () => {
         dispatch(setIsGlobalLoading(true))
 
         const paymentUri = paymentOptions.find(
@@ -80,15 +89,11 @@ const PlanPage = () => {
             planId: selectedMonth
         }
 
-        try {
-            const data = await axiosPrivateIns.post(paymentUri, bodyRequest)
+        const data = await axiosPrivateIns.post(paymentUri, bodyRequest)
 
-            window.location.href = data.data.data.payUrl
-        } catch (error) {
-            console.error(error)
-        } finally {
-            dispatch(setIsGlobalLoading(false))
-        }
+        window.location.href = data.data.data.payUrl
+
+        dispatch(setIsGlobalLoading(false))
     }
 
     // Load page
@@ -96,43 +101,27 @@ const PlanPage = () => {
     useBodyBgColor('#101010')
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                dispatch(setIsGlobalLoading(true))
+            dispatch(setIsGlobalLoading(true))
 
-                const plans = await axiosPublicIns.get('/plans')
+            const plans = await axiosPublicIns.get('/plans')
+            const pendingPayment = await axiosPrivateIns.get('/payment/pending')
+            const membership = await axiosPrivateIns.get('/user/membership')
 
-                setPlans(plans.data.data)
-                setSelectedMonth(plans.data.data[0]._id)
-                setTotalAmount(plans.data.data[0].price)
-            } catch (error) {
-                console.error(error)
-            } finally {
-                dispatch(setIsGlobalLoading(false))
-            }
-        }
-        const pendingPayment = async () => {
-            try {
-                dispatch(setIsGlobalLoading(true))
+            setPlans(plans.data.data)
+            setSelectedMonth(plans.data.data[0]._id)
+            setTotalAmount(plans.data.data[0].price)
+            setPendingPayment(pendingPayment.data.data)
+            setMembership(membership.data.data)
 
-                const { data } = await axiosPrivateIns.get('/payment/pending')
-
-                if (data) setPendingPayment(data.data)
-
-                console.log(data.data)
-            } catch (error) {
-                console.error(error)
-            } finally {
-                dispatch(setIsGlobalLoading(false))
-            }
+            dispatch(setIsGlobalLoading(false))
         }
         fetchData()
-        pendingPayment()
         window.scrollTo(0, 0)
     }, [])
 
     return (
         <div>
-            <main className="mx-auto max-w-[1366px] px-4 py-8">
+            <main className="mx-auto mt-5 max-w-[1366px] px-4 py-8">
                 {/* <div className="flex-start mb-10 flex items-center justify-center gap-48">
                     <div className="radio-center relative z-10 justify-items-center">
                         <div className="place-content-center">
@@ -220,7 +209,10 @@ const PlanPage = () => {
                                                     <p>{option.name}</p>
                                                 </div>
                                                 <div>
-                                                    <p>{option.price}VND</p>
+                                                    <p>
+                                                        {option?.price?.toLocaleString()}
+                                                        VND
+                                                    </p>
                                                 </div>
                                             </div>
                                         ))}
@@ -353,7 +345,7 @@ const PlanPage = () => {
                 </form>
             </main>
 
-            <Modal isOpen={isOpen}>
+            <Modal isOpen={pendingModal}>
                 <div className="m-3">
                     <strong className="text-white">
                         You have incomplete payment
@@ -361,7 +353,7 @@ const PlanPage = () => {
                     <div className="mt-5 flex items-center justify-center gap-14">
                         <button
                             className="h-8 w-full rounded bg-gray-700 text-white hover:opacity-80"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => setPendingModal(false)}
                         >
                             Cancel
                         </button>
@@ -370,6 +362,30 @@ const PlanPage = () => {
                             onClick={() =>
                                 (window.location.href = pendingPayment?.payUrl)
                             }
+                        >
+                            Continue
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal isOpen={membershipModal}>
+                <div className="m-3 text-white">
+                    <p>
+                        Your membership is still valid, we will add time to your
+                        current one.
+                    </p>
+                    <p className="text-center">Are you sure to continue?</p>
+                    <div className="mt-5 flex items-center justify-center gap-14">
+                        <button
+                            className="h-8 w-full rounded bg-gray-700 text-white hover:opacity-80"
+                            onClick={() => setMembershipModal(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="h-8 w-full rounded bg-gradient-main text-white hover:opacity-80"
+                            onClick={processPayment}
                         >
                             Continue
                         </button>

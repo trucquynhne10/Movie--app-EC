@@ -17,17 +17,12 @@ const PaymentDetailPage = () => {
     useTitle('FlqCine | Payment Detail')
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                dispatch(setIsGlobalLoading(true))
-                const { data } = await axiosPrivateIns(
-                    `/user/orders/${orderId}`
-                )
-                setOrder(data.data)
-            } catch (error) {
-                console.error(error)
-            } finally {
-                dispatch(setIsGlobalLoading(false))
-            }
+            dispatch(setIsGlobalLoading(true))
+
+            const { data } = await axiosPrivateIns(`/user/orders/${orderId}`)
+            setOrder(data.data)
+
+            dispatch(setIsGlobalLoading(false))
         }
         fetchData()
     }, [])

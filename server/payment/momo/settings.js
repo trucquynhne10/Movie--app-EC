@@ -40,7 +40,6 @@ module.exports = {
             orderId +
             '&requestType=' +
             settings.requestType
-        console.log(settings)
 
         return crypto
             .createHmac('sha256', settings.secretKey)
