@@ -20,12 +20,12 @@ checkPlanExpirationQueue.process(async () => {
 
         const plans = await UserPlan.find({ status: 'VALID' })
 
-        plans.forEach(async ({ finishDate }, index) => {
-            if (moment().isSameOrAfter(finishDate, 'day')) {
-                plans[index].status = 'INVALID'
-                await plans[index].save()
+        for (const plan of plans) {
+            if (moment().isSameOrAfter(plan.finishDate, 'day')) {
+                plan.status = 'INVALID'
+                await plan.save()
             }
-        })
+        }
     } catch (err) {
         console.log('Error running daily check', err)
     } finally {
@@ -34,7 +34,12 @@ checkPlanExpirationQueue.process(async () => {
     }
 })
 
-// Add job everyday
-checkPlanExpirationQueue.add({}, { repeat: { cron: '0 0 * * *' } })
+checkPlanExpirationQueue.add(
+    {},
+    {
+        // Cron expression for daily at midnight
+        repeat: { cron: '0 0 * * *' }
+    }
+)
 
 module.exports = checkPlanExpirationQueue

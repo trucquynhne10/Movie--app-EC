@@ -1,4 +1,4 @@
-require('dotenv')
+require('dotenv').config()
 const crypto = require('crypto')
 
 const settings = {
@@ -35,11 +35,12 @@ module.exports = {
             '&partnerCode=' +
             settings.partnerCode +
             '&redirectUrl=' +
-            settings.redirectUrl +
+            `${settings.redirectUrl}/${orderId}` +
             '&requestId=' +
             orderId +
             '&requestType=' +
             settings.requestType
+        console.log(settings)
 
         return crypto
             .createHmac('sha256', settings.secretKey)

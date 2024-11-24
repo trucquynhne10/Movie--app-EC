@@ -1,4 +1,3 @@
-const momoService = require('../payment/momo/service')
 const paymentService = require('../services/paymentService')
 
 const DEFAULT_SERVER_ERROR_MSG = 'Oops! Something wrong!'
@@ -8,7 +7,7 @@ const paymentController = {
         try {
             const { finalPrice, planId } = req.body
 
-            const { message, statusCode, order, plan } =
+            const { message, statusCode, result } =
                 await paymentService.processPayment({
                     finalPrice,
                     planId,
@@ -17,14 +16,9 @@ const paymentController = {
 
             if (message) return res.status(statusCode).json({ message })
 
-            const result = await momoService.pay({
-                amount: finalPrice,
-                orderId: order._id.toString(),
-                planName: plan.name
-            })
-
-            res.status(200).json({ data: result.data })
+            res.status(200).json({ data: result })
         } catch (err) {
+            console.log(err)
             res.status(500).json({
                 message: err.message || DEFAULT_SERVER_ERROR_MSG
             })
@@ -40,6 +34,18 @@ const paymentController = {
             res.status(204)
         } catch (err) {
             console.log(err)
+        }
+    },
+
+    getPendingPayment: async (req, res) => {
+        try {
+            const payment = await paymentService.getPendingPayment(req.userId)
+
+            res.status(200).json({ data: payment })
+        } catch (err) {
+            res.status(500).json({
+                message: err.message || DEFAULT_SERVER_ERROR_MSG
+            })
         }
     }
 }

@@ -18,4 +18,7 @@ router.delete(
     favoriteController.removeFromFavorite
 )
 
+router.get('/orders', verifyJWT, userController.getAllOrders)
+router.get('/orders/:orderId', verifyJWT, userController.getOrder)
+
 module.exports = router
