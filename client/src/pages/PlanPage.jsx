@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setIsGlobalLoading } from '../redux/slices/appSlice'
 import { axiosPublicIns, axiosPrivateIns } from '../libs/axios'
 import { paymentOptions } from '../utils/const'
+import Modal from '../components/common/Modal'
 
 const PlanPage = () => {
     const dispatch = useDispatch()
@@ -21,6 +22,8 @@ const PlanPage = () => {
     const [totalAmount, setTotalAmount] = useState(0)
     const [selectedMonth, setSelectedMonth] = useState('')
     const [selectedPayment, setSelectedPayment] = useState('momo')
+    const [isOpen, setIsOpen] = useState(false)
+    const [pendingPayment, setPendingPayment] = useState({})
 
     // Today
     const formattedCurrentDate = useMemo(() => {
@@ -63,6 +66,10 @@ const PlanPage = () => {
     // Handle payment submit
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        // Return if there is a pending payment
+        if (pendingPayment) return setIsOpen(true)
+
         dispatch(setIsGlobalLoading(true))
 
         const paymentUri = paymentOptions.find(
@@ -103,14 +110,30 @@ const PlanPage = () => {
                 dispatch(setIsGlobalLoading(false))
             }
         }
+        const pendingPayment = async () => {
+            try {
+                dispatch(setIsGlobalLoading(true))
+
+                const { data } = await axiosPrivateIns.get('/payment/pending')
+
+                if (data) setPendingPayment(data.data)
+
+                console.log(data.data)
+            } catch (error) {
+                console.error(error)
+            } finally {
+                dispatch(setIsGlobalLoading(false))
+            }
+        }
         fetchData()
+        pendingPayment()
         window.scrollTo(0, 0)
     }, [])
 
     return (
         <div>
             <main className="mx-auto max-w-[1366px] px-4 py-8">
-                <div className="flex-start mb-10 flex items-center justify-center gap-48">
+                {/* <div className="flex-start mb-10 flex items-center justify-center gap-48">
                     <div className="radio-center relative z-10 justify-items-center">
                         <div className="place-content-center">
                             <FontAwesomeIcon
@@ -142,7 +165,7 @@ const PlanPage = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 <form onSubmit={(e) => handleSubmit(e)}>
                     <div className="mx-5 flex justify-center">
                         <div className="mx-3 w-full flex-col px-5">
@@ -329,6 +352,30 @@ const PlanPage = () => {
                     </div>
                 </form>
             </main>
+
+            <Modal isOpen={isOpen}>
+                <div className="m-3">
+                    <strong className="text-white">
+                        You have incomplete payment
+                    </strong>
+                    <div className="mt-5 flex items-center justify-center gap-14">
+                        <button
+                            className="h-8 w-full rounded bg-gray-700 text-white hover:opacity-80"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="h-8 w-full rounded bg-gradient-main text-white hover:opacity-80"
+                            onClick={() =>
+                                (window.location.href = pendingPayment?.payUrl)
+                            }
+                        >
+                            Continue
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     )
 }

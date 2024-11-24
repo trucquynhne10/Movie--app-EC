@@ -2,13 +2,16 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import MainLayout from './layouts/MainLayout'
 import routes from './routes/router'
+import Modal from 'react-modal'
+
+Modal.setAppElement('#root')
 
 function App() {
     return (
         <>
             <BrowserRouter>
                 <Routes>
-                    <Route path='/' element={<MainLayout />}>
+                    <Route path="/" element={<MainLayout />}>
                         {routes.map((route, index) =>
                             route.indexPage ? (
                                 <Route

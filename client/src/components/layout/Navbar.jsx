@@ -11,7 +11,8 @@ import {
     faHome,
     faPhotoFilm,
     faTv,
-    faMagnifyingGlass
+    faMagnifyingGlass,
+    faCreditCard
 } from '@fortawesome/free-solid-svg-icons'
 import {
     setIsAuthModalOpen,
@@ -44,7 +45,7 @@ export const NAV_ITEMS = [
     {
         label: 'plan',
         path: '/plan',
-        icon: <FontAwesomeIcon icon={faHeart} size='lg' />
+        icon: <FontAwesomeIcon icon={faHeart} size="lg" />
     }
 ]
 
@@ -52,12 +53,17 @@ const MENU_ITEMS = [
     {
         label: 'Favorites',
         path: '/favorites',
-        icon: <FontAwesomeIcon icon={faHeart} size='lg' />
+        icon: <FontAwesomeIcon icon={faHeart} size="lg" />
     },
     {
         label: 'Reviews',
         path: '/reviews',
         icon: <FontAwesomeIcon icon={faComments} />
+    },
+    {
+        label: 'Payment History',
+        path: '/payment-history',
+        icon: <FontAwesomeIcon icon={faCreditCard} />
     },
     {
         label: 'Update Password',
@@ -112,14 +118,14 @@ const Navbar = () => {
 
     return (
         <header
-            className={`sticky top-0 z-10 flex h-[72px] items-center justify-between bg-black px-5 lg:px-6 z-50 ${
+            className={`sticky top-0 z-10 z-50 flex h-[72px] items-center justify-between bg-black px-5 lg:px-6 ${
                 transparentBg && !isLoading ? 'bg-transparent' : 'bg-black'
             }`}
         >
             <Logo />
 
             {/* Navigation btn */}
-            <div className='hidden h-full gap-3 text-white md:flex lg:gap-4'>
+            <div className="hidden h-full gap-3 text-white md:flex lg:gap-4">
                 {NAV_ITEMS.map((item) => (
                     <div
                         key={item.path}
@@ -133,29 +139,29 @@ const Navbar = () => {
                 ))}
             </div>
 
-            <div className='flex items-center gap-5'>
+            <div className="flex items-center gap-5">
                 {user ? (
                     // Dropdown menu
                     <div
                         onMouseEnter={() => setIsDropdownOpen(true)}
                         onMouseLeave={() => setIsDropdownOpen(false)}
-                        className='relative cursor-pointer py-4'
+                        className="relative cursor-pointer py-4"
                     >
-                        <span className='text-xl lg:px-4'>
-                            <span className='hidden font-medium text-white lg:inline'>
+                        <span className="text-xl lg:px-4">
+                            <span className="hidden font-medium text-white lg:inline">
                                 Welcome,{' '}
                             </span>
-                            <span className='bg-gradient-main bg-clip-text font-bold uppercase text-transparent'>
+                            <span className="bg-gradient-main bg-clip-text font-bold uppercase text-transparent">
                                 {user.fullName}
                             </span>
                         </span>
-                        <div className='absolute right-0 top-full'>
+                        <div className="absolute right-0 top-full">
                             {isDropdownOpen && (
-                                <ul className='list-none rounded bg-dropdown py-2'>
+                                <ul className="list-none rounded bg-dropdown py-2">
                                     {MENU_ITEMS.map((item) => (
                                         <li
                                             key={item.label}
-                                            className='flex items-center px-6 py-2 text-white hover:bg-dropdownHover'
+                                            className="flex items-center px-6 py-2 text-white hover:bg-dropdownHover"
                                             onClick={() => {
                                                 if (item.path) {
                                                     navigate(item.path)
@@ -164,10 +170,10 @@ const Navbar = () => {
                                                 }
                                             }}
                                         >
-                                            <span className='flex w-10 items-center'>
+                                            <span className="flex w-10 items-center">
                                                 {item?.icon}
                                             </span>
-                                            <span className='w-max font-medium uppercase'>
+                                            <span className="w-max font-medium uppercase">
                                                 {item.label}
                                             </span>
                                         </li>
@@ -179,7 +185,7 @@ const Navbar = () => {
                 ) : (
                     // Sign in btn
                     <button
-                        className='rounded bg-gradient-main px-5 py-2 font-medium uppercase text-white hover:opacity-90 lg:px-8'
+                        className="rounded bg-gradient-main px-5 py-2 font-medium uppercase text-white hover:opacity-90 lg:px-8"
                         onClick={() => dispatch(setIsAuthModalOpen(true))}
                     >
                         Sign In
@@ -187,13 +193,13 @@ const Navbar = () => {
                 )}
 
                 <button
-                    className='md:hidden'
+                    className="md:hidden"
                     onClick={() => dispatch(setIsSidebarOpen(true))}
                 >
                     <FontAwesomeIcon
                         icon={faBars}
-                        size='2x'
-                        className='mt-1 text-white'
+                        size="2x"
+                        className="mt-1 text-white"
                     />
                 </button>
             </div>
