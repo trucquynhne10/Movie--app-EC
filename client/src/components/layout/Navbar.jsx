@@ -12,7 +12,8 @@ import {
     faPhotoFilm,
     faTv,
     faMagnifyingGlass,
-    faCreditCard
+    faCreditCard,
+    faIdCardClip
 } from '@fortawesome/free-solid-svg-icons'
 import {
     setIsAuthModalOpen,
@@ -50,6 +51,11 @@ export const NAV_ITEMS = [
 ]
 
 const MENU_ITEMS = [
+    {
+        label: 'Membership',
+        path: '/membership',
+        icon: <FontAwesomeIcon icon={faIdCardClip} size="lg" />
+    },
     {
         label: 'Favorites',
         path: '/favorites',

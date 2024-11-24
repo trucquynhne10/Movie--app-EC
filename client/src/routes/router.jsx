@@ -11,6 +11,7 @@ import NotFoundPage from '../pages/NotFoundPage'
 import PlanPage from '../pages/PlanPage'
 import PaymentHistoryPage from '../pages/PaymentHistoryPage'
 import PaymentDetailPage from '../pages/PaymentDetailPage'
+import MembershipPage from '../pages/MembershipPage'
 
 const routes = [
     {
@@ -82,6 +83,14 @@ const routes = [
         element: (
             <AuthProtector>
                 <PaymentDetailPage />
+            </AuthProtector>
+        )
+    },
+    {
+        path: '/membership',
+        element: (
+            <AuthProtector>
+                <MembershipPage />
             </AuthProtector>
         )
     }
