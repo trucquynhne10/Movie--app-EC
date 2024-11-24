@@ -9,6 +9,8 @@ import MyFavoritesPage from '../pages/MyFavoritesPage'
 import UpdatePasswordPage from '../pages/UpdatePasswordPage'
 import NotFoundPage from '../pages/NotFoundPage'
 import PlanPage from '../pages/PlanPage'
+import PaymentHistoryPage from '../pages/PaymentHistoryPage'
+import PaymentDetailPage from '../pages/PaymentDetailPage'
 
 const routes = [
     {
@@ -64,6 +66,22 @@ const routes = [
         element: (
             <AuthProtector>
                 <PlanPage />
+            </AuthProtector>
+        )
+    },
+    {
+        path: '/payment-history',
+        element: (
+            <AuthProtector>
+                <PaymentHistoryPage />
+            </AuthProtector>
+        )
+    },
+    {
+        path: '/payment-history/:orderId',
+        element: (
+            <AuthProtector>
+                <PaymentDetailPage />
             </AuthProtector>
         )
     }
