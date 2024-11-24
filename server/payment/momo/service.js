@@ -13,7 +13,7 @@ const momoService = {
             partnerCode: settings.partnerCode,
             partnerName: settings.partnerName,
             storeId: settings.storeId,
-            redirectUrl: settings.redirectUrl,
+            redirectUrl: `${settings.redirectUrl}/${orderId}`,
             ipnUrl: settings.ipnUrl,
             lang: settings.lang,
             requestType: settings.requestType,

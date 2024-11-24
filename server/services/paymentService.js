@@ -3,6 +3,7 @@ const Order = require('../models/Order')
 const User = require('../models/User')
 const Plan = require('../models/Plan')
 const UserPlan = require('../models/UserPlan')
+const momoService = require('../payment/momo/service')
 
 const paymentService = {
     processPayment: async ({ finalPrice, planId, userId }) => {
@@ -18,17 +19,28 @@ const paymentService = {
             return { message: 'Invalid user or plan', statusCode: 404 }
 
         // Create order
-        const order = await Order.create({
+        const order = new Order({
             finalPrice,
             plan: planId,
             user: userId
         })
 
+        // Call momo API
+        const result = await momoService.pay({
+            amount: finalPrice,
+            orderId: order._id.toString(),
+            planName: plan.name
+        })
+
+        // Save pay url
+        order.payUrl = result.data.shortLink
+        await order.save()
+
         // Update user orders
         user.orders.push(order)
         await user.save()
 
-        return { order, plan }
+        return { result: result.data }
     },
 
     completePayment: async ({ resultCode, orderId }) => {
@@ -66,7 +78,13 @@ const paymentService = {
         if (resultCode !== 0) order.status = 'CANCELED'
 
         await order.save()
-    }
+    },
+
+    getPendingPayment: async (userId) =>
+        await Order.findOne({
+            user: userId,
+            status: 'PENDING'
+        })
 }
 
 module.exports = paymentService

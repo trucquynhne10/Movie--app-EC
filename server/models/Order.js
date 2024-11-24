@@ -21,7 +21,8 @@ const OrderSchema = new Schema(
             enum: ['PENDING', 'PAID', 'CANCELED'],
             default: 'PENDING',
             require: true
-        }
+        },
+        payUrl: String
     },
     { timestamps: true }
 )

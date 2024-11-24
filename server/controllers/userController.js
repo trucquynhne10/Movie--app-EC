@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
+const Order = require('../models/Order')
 
 const DEFAULT_SERVER_ERROR_MSG = 'Oops! Something wrong!'
 const BCRYPT_SALT = Number(process.env.SALTED_PASSWORD)
@@ -139,6 +140,33 @@ const userController = {
             }
 
             res.status(200).json({ data: user })
+        } catch (err) {
+            res.status(500).json({
+                message: err.message ?? DEFAULT_SERVER_ERROR_MSG
+            })
+        }
+    },
+
+    getAllOrders: async (req, res) => {
+        try {
+            const orders = await Order.find({ user: req.userId }).populate('plan')
+
+            res.status(200).json({ data: orders })
+        } catch (err) {
+            res.status(500).json({
+                message: err.message ?? DEFAULT_SERVER_ERROR_MSG
+            })
+        }
+    },
+
+    getOrder: async (req, res) => {
+        try {
+            const order = await Order.findOne({
+                user: req.userId,
+                _id: req.params.orderId
+            }).populate('plan')
+
+            res.status(200).json({ data: order })
         } catch (err) {
             res.status(500).json({
                 message: err.message ?? DEFAULT_SERVER_ERROR_MSG
