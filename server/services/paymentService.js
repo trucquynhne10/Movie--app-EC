@@ -4,9 +4,10 @@ const User = require('../models/User')
 const Plan = require('../models/Plan')
 const UserPlan = require('../models/UserPlan')
 const momoService = require('../payment/momo/service')
+const paymentMethods = require('../payment/methods')
 
 const paymentService = {
-    processPayment: async ({ finalPrice, planId, userId }) => {
+    processPayment: async ({ finalPrice, planId, userId, method }) => {
         // Validate object id type
         const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id)
         if (!isValidObjectId(planId) || !isValidObjectId(userId))
@@ -18,29 +19,37 @@ const paymentService = {
         if (!plan || !user)
             return { message: 'Invalid user or plan', statusCode: 404 }
 
+        // Validate payment method
+        const validMethod = paymentMethods.includes(method)
+        if (!validMethod)
+            return { message: 'Invalid payment method', statusCode: 400 }
+
         // Create order
         const order = new Order({
-            finalPrice,
+            finalPrice: finalPrice,
+            method,
             plan: planId,
             user: userId
         })
 
-        // Call momo API
-        const result = await momoService.pay({
-            amount: finalPrice,
-            orderId: order._id.toString(),
-            planName: plan.name
-        })
+        // Call payment service
+        if (method === 'momo') {
+            const result = await momoService.pay({
+                amount: finalPrice,
+                orderId: order._id.toString(),
+                planName: plan.name
+            })
 
-        // Save pay url
-        order.payUrl = result.data.shortLink
-        await order.save()
+            // Save pay url
+            order.payUrl = result.data.shortLink
+            await order.save()
 
-        // Update user orders
-        user.orders.push(order)
-        await user.save()
+            // Update user orders
+            user.orders.push(order)
+            await user.save()
 
-        return { result: result.data }
+            return { result: result.data }
+        }
     },
 
     completePayment: async ({ resultCode, orderId }) => {

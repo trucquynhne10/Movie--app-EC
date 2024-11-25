@@ -4,8 +4,9 @@ const paymentController = require('../controllers/paymentController')
 
 const router = express.Router()
 
-router.post('/momo', verifyJWT, paymentController.payWithMomo)
+router.post('/', verifyJWT, paymentController.createPayment)
 router.post('/callback', paymentController.callback)
 router.get('/pending', verifyJWT, paymentController.getPendingPayment)
+router.post('/apply-voucher', verifyJWT, paymentController.applyVoucher)
 
 module.exports = router

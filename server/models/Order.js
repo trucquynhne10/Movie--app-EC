@@ -12,8 +12,16 @@ const OrderSchema = new Schema(
             ref: 'Plan',
             require: true
         },
+        voucher: {
+            type: Schema.Types.ObjectId,
+            ref: 'Voucher'
+        },
         finalPrice: {
             type: Number,
+            require: true
+        },
+        method: {
+            type: String,
             require: true
         },
         status: {
