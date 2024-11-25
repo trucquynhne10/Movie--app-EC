@@ -13,6 +13,8 @@ import { setIsGlobalLoading } from '../redux/slices/appSlice'
 import { axiosPublicIns, axiosPrivateIns } from '../libs/axios'
 import { paymentOptions } from '../utils/const'
 import Modal from '../components/common/Modal'
+import { toast } from 'react-toastify'
+import getToastOptions from '../configs/toastConfig'
 
 const PlanPage = () => {
     const dispatch = useDispatch()
@@ -26,6 +28,8 @@ const PlanPage = () => {
     const [membershipModal, setMembershipModal] = useState(false)
     const [pendingPayment, setPendingPayment] = useState()
     const [membership, setMembership] = useState()
+    const [voucherCode, setVoucherCode] = useState('')
+    const [voucher, setVoucher] = useState()
 
     // Today
     const formattedCurrentDate = useMemo(() => {
@@ -79,21 +83,51 @@ const PlanPage = () => {
     }
 
     const processPayment = async () => {
-        dispatch(setIsGlobalLoading(true))
+        try {
+            dispatch(setIsGlobalLoading(true))
 
-        const paymentUri = paymentOptions.find(
-            ({ id }) => id === selectedPayment
-        ).uri
-        const bodyRequest = {
-            finalPrice: totalAmount,
-            planId: selectedMonth
+            const bodyRequest = {
+                finalPrice: plans.find(({ _id }) => _id === selectedMonth)
+                    ?.price,
+                planId: selectedMonth,
+                method: selectedPayment,
+                voucherCode
+            }
+
+            const data = await axiosPrivateIns.post('/payment', bodyRequest)
+
+            window.location.href = data.data.data.payUrl
+        } catch (error) {
+            const { message } = error.response.data
+
+            toast.error(message, getToastOptions())
+            setVoucherCode('')
+        } finally {
+            dispatch(setIsGlobalLoading(false))
         }
+    }
 
-        const data = await axiosPrivateIns.post(paymentUri, bodyRequest)
+    // Apply voucher
+    const applyVoucher = async () => {
+        try {
+            dispatch(setIsGlobalLoading(true))
+            const { data } = await axiosPrivateIns.post(
+                '/payment/apply-voucher',
+                {
+                    price: totalAmount,
+                    voucherCode
+                }
+            )
+            setVoucher(data.data)
+            setTotalAmount(data.data.finalPrice)
+        } catch (error) {
+            const { message } = error.response.data
 
-        window.location.href = data.data.data.payUrl
-
-        dispatch(setIsGlobalLoading(false))
+            toast.error(message, getToastOptions())
+            setVoucherCode('')
+        } finally {
+            dispatch(setIsGlobalLoading(false))
+        }
     }
 
     // Load page
@@ -111,7 +145,7 @@ const PlanPage = () => {
             setSelectedMonth(plans.data.data[0]._id)
             setTotalAmount(plans.data.data[0].price)
             setPendingPayment(pendingPayment.data.data)
-            setMembership(membership.data.data)
+            setMembership(membership.data.data.membership)
 
             dispatch(setIsGlobalLoading(false))
         }
@@ -305,7 +339,15 @@ const PlanPage = () => {
                             </div>
                             <div className="flex justify-between py-2">
                                 <p>Value</p>
-                                <p>{totalAmount.toLocaleString()}đ</p>
+                                <p>
+                                    {plans
+                                        .find(
+                                            (option) =>
+                                                option._id === selectedMonth
+                                        )
+                                        ?.price?.toLocaleString() || 0}
+                                    đ
+                                </p>
                             </div>
                             <div className="flex justify-between py-2">
                                 <p>Effective Date</p>
@@ -315,7 +357,54 @@ const PlanPage = () => {
                                 <p>Next payment</p>
                                 <p>{formattedNextPaymentDate}</p>
                             </div>
+                            <div className="relative mb-8 mt-4">
+                                <input
+                                    type="text"
+                                    className="peer block min-h-[auto] w-full rounded border-2 border-neutral-500 bg-transparent py-2 pl-4 pr-28 font-medium leading-[2.15] text-white caret-primary outline-none transition-all duration-200 ease-linear focus:border-primary motion-reduce:transition-none"
+                                    id="voucher"
+                                    placeholder=" "
+                                    spellCheck={false}
+                                    value={voucherCode}
+                                    onChange={(e) =>
+                                        setVoucherCode(e.target.value)
+                                    }
+                                />
+                                <label
+                                    htmlFor="voucher"
+                                    className="pointer-events-none absolute left-3 top-1/2 mb-0 max-w-[90%] origin-[0_0] -translate-y-1/2 truncate px-1 font-medium text-neutral-500 transition-all duration-200 ease-out peer-focus:top-0.5 peer-focus:scale-[0.8] peer-focus:bg-black peer-focus:text-primary peer-[:not(:placeholder-shown)]:top-0.5 peer-[:not(:placeholder-shown)]:scale-[0.8] peer-[:not(:placeholder-shown)]:text-primary motion-reduce:transition-none"
+                                >
+                                    Voucher
+                                </label>
+                                <button
+                                    type="button"
+                                    className={`absolute right-6 top-1/2 -translate-y-1/2 rounded px-4 py-1 text-xs ${
+                                        voucherCode
+                                            ? 'bg-gradient-main hover:opacity-70'
+                                            : 'cursor-not-allowed bg-gray-600'
+                                    }`}
+                                    disabled={!voucherCode}
+                                    onClick={applyVoucher}
+                                >
+                                    Apply
+                                </button>
+                            </div>
+                            {voucher?.description && (
+                                <p className="-mt-5 mb-4 text-sm text-gray-400">
+                                    {voucher?.description}
+                                </p>
+                            )}
                             <hr className="mt-2 py-2" />
+                            {voucher && (
+                                <div className="flex justify-between py-2">
+                                    <p>Discount amount</p>
+                                    <p className="relative text-xl font-semibold">
+                                        -
+                                        {voucher?.discountAmount?.toLocaleString() ||
+                                            0}
+                                        VND
+                                    </p>
+                                </div>
+                            )}
                             <div className="flex justify-between py-2">
                                 <p>Total payment</p>
                                 <p className="text-xl font-semibold text-orange-600">
@@ -324,6 +413,7 @@ const PlanPage = () => {
                             </div>
                             <div className="py-3 text-center">
                                 <button
+                                    type="submit"
                                     disabled={
                                         !selectedMonth || !selectedPayment
                                     }
@@ -372,7 +462,7 @@ const PlanPage = () => {
             <Modal isOpen={membershipModal}>
                 <div className="m-3 text-white">
                     <p>
-                        Your membership is still valid, we will add time to your
+                        Your membership is still valid, we will extend your
                         current one.
                     </p>
                     <p className="text-center">Are you sure to continue?</p>

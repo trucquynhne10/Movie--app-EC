@@ -5,10 +5,15 @@ import { setIsGlobalLoading } from '../redux/slices/appSlice'
 import useTitle from '../hooks/useTitle'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
+import { toast } from 'react-toastify'
+import getToastOptions from '../configs/toastConfig'
+import { faCopy } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const MembershipPage = () => {
     const dispatch = useDispatch()
     const [membership, setMembership] = useState()
+    const [promoCode, setPromoCode] = useState()
 
     // Load page
     useTitle('FlqCine | Membership')
@@ -18,12 +23,18 @@ const MembershipPage = () => {
 
             const { data } = await axiosPrivateIns.get('/user/membership')
 
-            setMembership(data.data)
+            setMembership(data.data.membership)
+            setPromoCode(data.data.promoCode)
 
             dispatch(setIsGlobalLoading(false))
         }
         fetchData()
     }, [])
+
+    const handlePromoCodeClick = () => {
+        navigator.clipboard.writeText(promoCode?.code)
+        toast.success('Copy promo code to clipboard', getToastOptions())
+    }
 
     return (
         <main className="-mt-20 flex h-screen items-center justify-center text-white">
@@ -61,6 +72,22 @@ const MembershipPage = () => {
                                 )}
                             </div>
                         </div>
+                    </div>
+
+                    <div className="mt-7 flex flex-col items-center justify-center gap-4">
+                        <span>Promo code</span>
+                        <button
+                            className="relative rounded border border-secondary px-16 py-2 hover:opacity-80"
+                            onClick={handlePromoCodeClick}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                        >
+                            {promoCode?.code}
+                            <FontAwesomeIcon
+                                icon={faCopy}
+                                className="absolute right-4 top-1/2 -translate-y-1/2"
+                            />
+                        </button>
                     </div>
                 </div>
             )}

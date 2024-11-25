@@ -57,13 +57,20 @@ const PaymentHistory = () => {
             ) : (
                 <div>
                     <h3 className="bg-gradient-main bg-clip-text text-2xl font-bold text-transparent">
-                        Order History
+                        Payment History
                     </h3>
 
                     <div className="mt-10 grid grid-cols-3 gap-20">
                         {orders.map(
                             (
-                                { _id, plan, createdAt, finalPrice, status },
+                                {
+                                    _id,
+                                    plan,
+                                    createdAt,
+                                    finalPrice,
+                                    status,
+                                    method
+                                },
                                 index
                             ) => {
                                 return (
@@ -72,17 +79,20 @@ const PaymentHistory = () => {
                                         key={index}
                                         className="flex items-center justify-between rounded-lg border border-secondary px-10 py-6 hover:scale-110"
                                     >
-                                        <span>#{index + 1}</span>
-                                        <div className="flex flex-col gap-5">
-                                            <span>{plan?.name}</span>
+                                        <div className="flex flex-col gap-5 items-center">
+                                            <span>#{index + 1}</span>
                                             <span>
                                                 {moment(createdAt).format(
                                                     'DD-MM-YYYY'
                                                 )}
                                             </span>
+                                        </div>
+                                        <div className="flex flex-col gap-5">
+                                            <span>{plan?.name}</span>
                                             <span>
                                                 {finalPrice.toLocaleString()}VND
                                             </span>
+                                            <span>{method?.toUpperCase()}</span>
                                         </div>
                                         <span
                                             className={getStatusColor(status)}

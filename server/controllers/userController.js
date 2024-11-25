@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const Order = require('../models/Order')
 const UserPlan = require('../models/UserPlan')
+const Voucher = require('../models/Voucher')
 
 const DEFAULT_SERVER_ERROR_MSG = 'Oops! Something wrong!'
 const BCRYPT_SALT = Number(process.env.SALTED_PASSWORD)
@@ -179,12 +180,24 @@ const userController = {
 
     getMembership: async (req, res) => {
         try {
-            const data = await UserPlan.findOne({
+            const membership = await UserPlan.findOne({
                 user: req.userId,
                 status: 'VALID'
+            }).populate({
+                path: 'user',
+                select: 'username'
             })
 
-            res.status(200).json({ data })
+            let promoCode
+            if (membership) {
+                promoCode = await Voucher.findOne({
+                    groupName: 'PROMO_CODE',
+                    code: membership.user.username
+                })
+                membership.depopulate('user')
+            }
+
+            res.status(200).json({ data: { membership, promoCode } })
         } catch (err) {
             res.status(500).json({
                 message: err.message ?? DEFAULT_SERVER_ERROR_MSG

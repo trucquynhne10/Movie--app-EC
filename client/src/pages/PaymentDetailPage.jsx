@@ -50,27 +50,31 @@ const PaymentDetailPage = () => {
 
                     <div className="mt-12 flex flex-col gap-4 rounded border border-secondary p-6">
                         <div className="flex gap-12">
-                            <div className="w-32">Customer</div>
+                            <div className="w-36">Customer</div>
                             <div>{userInfo?.fullName}</div>
                         </div>
                         <div className="flex gap-12">
-                            <div className="w-32">Plan</div>
+                            <div className="w-36">Plan</div>
                             <div>{order?.plan?.name}</div>
                         </div>
                         <div className="flex gap-12">
-                            <div className="w-32">Status</div>
-                            <div className={getStatusColor()}>
-                                {order?.status}
-                            </div>
-                        </div>
-                        <div className="flex gap-12">
-                            <div className="w-32">Final Price</div>
+                            <div className="w-36">Final Price</div>
                             <div>{order?.finalPrice.toLocaleString()}VND</div>
                         </div>
                         <div className="flex gap-12">
-                            <div className="w-32">Created Date</div>
+                            <div className="w-36">Created Date</div>
                             <div>
                                 {moment(order?.createdAt).format('DD-MM-YYYY')}
+                            </div>
+                        </div>
+                        <div className="flex gap-12">
+                            <div className="w-36">Payment Method</div>
+                            <div>{order?.method?.toUpperCase()}</div>
+                        </div>
+                        <div className="flex gap-12">
+                            <div className="w-36">Status</div>
+                            <div className={getStatusColor()}>
+                                {order?.status}
                             </div>
                         </div>
                     </div>
