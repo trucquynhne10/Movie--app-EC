@@ -5,30 +5,30 @@ const UserPlanSchema = new Schema(
         user: {
             type: Schema.Types.ObjectId,
             ref: 'User',
-            require: true
+            required: true
         },
         plan: {
             type: Schema.Types.ObjectId,
             ref: 'Plan',
-            require: true
+            required: true
         },
         order: {
             type: Schema.Types.ObjectId,
             ref: 'Order',
-            require: true
+            required: true
         },
         startDate: {
             type: Date,
-            require: true
+            required: true
         },
         finishDate: {
             type: Date,
-            require: true
+            required: true
         },
         status: {
             type: String,
             enum: ['VALID', 'INVALID'],
-            require: true
+            required: true
         }
     },
     { timestamps: true }
