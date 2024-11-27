@@ -6,7 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     faComments,
     faTrash,
-    faRotate
+    faRotate,
+    faStar
 } from '@fortawesome/free-solid-svg-icons'
 import { axiosPrivateIns } from '../libs/axios'
 import { setIsGlobalLoading } from '../redux/slices/appSlice'
@@ -77,12 +78,12 @@ const MyReviewsPage = () => {
 
     return (
         <div>
-            <main className='mx-auto flex max-w-[1366px] flex-col px-4 py-[75px]'>
+            <main className="mx-auto flex max-w-[1366px] flex-col px-4 py-[75px]">
                 <h2 className='relative mb-10 border-b border-[#d8d8d8] pb-5 text-lg font-semibold uppercase text-primary after:absolute after:bottom-[-1px] after:left-0 after:h-1 after:w-[180px] after:bg-gradient-main after:content-[""]'>
                     Your Reviews ({`0${count}`.slice(-2)})
                 </h2>
 
-                <div className='-mr-5 mb-10'>
+                <div className="-mr-5 mb-10">
                     {filteredReviews.map((item) => (
                         <ReviewItem
                             key={item._id}
@@ -94,11 +95,11 @@ const MyReviewsPage = () => {
 
                 {filteredReviews.length < reviews.length && (
                     <button
-                        className='self-center rounded-full bg-gradient-main px-40 py-4 font-medium uppercase tracking-wider text-white hover:opacity-90'
+                        className="self-center rounded-full bg-gradient-main px-40 py-4 font-medium uppercase tracking-wider text-white hover:opacity-90"
                         onClick={handleLoadMore}
                     >
                         <FontAwesomeIcon icon={faComments} />
-                        <span className='ml-3'>Load More</span>
+                        <span className="ml-3">Load More</span>
                     </button>
                 )}
             </main>
@@ -131,12 +132,12 @@ const ReviewItem = ({ review, handleRemoveReviewFromUI }) => {
 
     return (
         <div
-            className='mb-5 mr-5 flex cursor-pointer gap-5 rounded p-5 text-white last:mb-0 hover:bg-[#212121]'
+            className="mb-5 mr-5 flex cursor-pointer gap-5 rounded p-5 text-white last:mb-0 hover:bg-[#212121]"
             onClick={() => navigate(`/${review.mediaType}/${review.mediaId}`)}
         >
-            <div className='w-0 md:w-[10%]'>
+            <div className="w-0 md:w-[10%]">
                 <div
-                    className='rounded bg-imgAlt bg-cover pt-[150%]'
+                    className="rounded bg-imgAlt bg-cover pt-[150%]"
                     style={{
                         backgroundImage: `url(${tmdbConfig.posterPath(
                             review.mediaPoster
@@ -145,34 +146,51 @@ const ReviewItem = ({ review, handleRemoveReviewFromUI }) => {
                 ></div>
             </div>
 
-            <div className='flex-1'>
-                <div className='flex items-center justify-between'>
+            <div className="flex-1">
+                <div className="flex items-center justify-between">
                     <div>
-                        <h6 className='mb-1 text-lg font-semibold'>
+                        <h6 className="mb-1 text-lg font-semibold">
                             {review.mediaTitle}
                         </h6>
-                        <p className='text-sm font-medium text-secondary'>
+                        <p className="text-sm font-medium text-secondary">
                             {formatDateTimeString(review.createdAt)}
                         </p>
                     </div>
 
                     <button
-                        className='rounded bg-gradient-main px-5 py-2 font-medium uppercase text-white hover:opacity-90 lg:px-8'
+                        className="rounded bg-gradient-main px-5 py-2 font-medium uppercase text-white hover:opacity-90 lg:px-8"
                         onClick={handleRemoveReviewFromDB}
                     >
                         {isLoading ? (
                             <FontAwesomeIcon
                                 icon={faRotate}
-                                className='animate-spin'
+                                className="animate-spin"
                             />
                         ) : (
                             <FontAwesomeIcon icon={faTrash} />
                         )}
-                        <span className='ml-3'>Remove</span>
+                        <span className="ml-3">Remove</span>
                     </button>
                 </div>
 
-                <p className='mt-4'>{review.content}</p>
+                <div className="my-4 flex gap-2">
+                    {[...Array(10)].map((item, index) => {
+                        const givenRating = index + 1
+                        return (
+                            <FontAwesomeIcon
+                                key={index}
+                                icon={faStar}
+                                className={`${
+                                    givenRating < review?.rating ||
+                                    givenRating === review?.rating
+                                        ? 'text-primary'
+                                        : 'text-gray-200'
+                                }`}
+                            />
+                        )
+                    })}
+                </div>
+                <p className="mt-4">{review.content}</p>
             </div>
         </div>
     )

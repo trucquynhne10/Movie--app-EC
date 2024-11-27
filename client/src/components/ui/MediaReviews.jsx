@@ -3,7 +3,8 @@ import {
     faComments,
     faPaperPlane,
     faTrash,
-    faRotate
+    faRotate,
+    faStar
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useDispatch, useSelector } from 'react-redux'
@@ -27,6 +28,7 @@ const MediaReviews = ({ heading, mediaType, media, reviews }) => {
     const [reviewCount, setReviewCount] = useState(0)
     const [content, setContent] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [rating, setRating] = useState(0)
     const commentsRef = useRef()
 
     useEffect(() => {
@@ -71,6 +73,7 @@ const MediaReviews = ({ heading, mediaType, media, reviews }) => {
 
     const handlePostComment = async (e) => {
         e.preventDefault()
+
         if (isLoading) return
 
         if (isEmpty(content)) {
@@ -87,7 +90,8 @@ const MediaReviews = ({ heading, mediaType, media, reviews }) => {
                 mediaId: media.id,
                 mediaType,
                 mediaTitle: media.title || media.name,
-                mediaPoster: media.poster_path
+                mediaPoster: media.poster_path,
+                rating
             })
 
             toast.success(data.message, getToastOptions())
@@ -102,15 +106,15 @@ const MediaReviews = ({ heading, mediaType, media, reviews }) => {
     }
 
     return (
-        <div className='grid grid-cols-3 gap-[75px] lg:gap-8'>
+        <div className="grid grid-cols-3 gap-[75px] lg:gap-8">
             {/* Display comments */}
-            <div className='col-span-3 lg:col-span-2'>
+            <div className="col-span-3 lg:col-span-2">
                 <h2 className='relative mb-10 border-b border-[#d8d8d8] pb-5 text-lg font-semibold uppercase text-primary after:absolute after:bottom-[-1px] after:left-0 after:h-1 after:w-[180px] after:bg-gradient-main after:content-[""]'>
                     {heading} ({`0${reviewCount}`.slice(-2)})
                 </h2>
 
                 <div
-                    className='mb-10 max-h-[400px] overflow-y-scroll scroll-smooth'
+                    className="mb-10 max-h-[400px] overflow-y-scroll scroll-smooth"
                     ref={commentsRef}
                 >
                     {filteredReviews.map((item) => (
@@ -124,61 +128,81 @@ const MediaReviews = ({ heading, mediaType, media, reviews }) => {
 
                 {filteredReviews.length < listReviews.length && (
                     <button
-                        className='rounded-full bg-gradient-main px-10 py-[10px] text-[14px] font-medium uppercase tracking-wider text-white hover:opacity-90'
+                        className="rounded-full bg-gradient-main px-10 py-[10px] text-[14px] font-medium uppercase tracking-wider text-white hover:opacity-90"
                         onClick={handleLoadMore}
                     >
                         <FontAwesomeIcon icon={faComments} />
-                        <span className='ml-3'>Load More</span>
+                        <span className="ml-3">Load More</span>
                     </button>
                 )}
             </div>
 
             {/* Add comment */}
-            <div className='col-span-3 lg:col-span-1'>
+            <div className="col-span-3 lg:col-span-1">
                 <h2 className='relative mb-10 border-b border-[#d8d8d8] pb-5 text-lg font-semibold uppercase text-primary after:absolute after:bottom-[-1px] after:left-0 after:h-1 after:w-[180px] after:bg-gradient-main after:content-[""]'>
                     Leave a comment
                 </h2>
 
                 {user ? (
                     <div>
-                        <div className='mb-5 flex items-center gap-5'>
+                        <div className="flex items-center gap-5">
                             <CircularNameAvatar name={user.fullName} />
-                            <p className='text-lg font-semibold text-white'>
+                            <p className="text-lg font-semibold text-white">
                                 {user.fullName}
                             </p>
                         </div>
                         <form onSubmit={handlePostComment}>
+                            <div className="my-4 flex gap-2">
+                                {[...Array(10)].map((item, index) => {
+                                    const givenRating = index + 1
+                                    return (
+                                        <FontAwesomeIcon
+                                            key={index}
+                                            icon={faStar}
+                                            className={`${
+                                                givenRating < rating ||
+                                                givenRating === rating
+                                                    ? 'text-primary'
+                                                    : 'text-gray-200'
+                                            } cursor-pointer`}
+                                            onClick={() =>
+                                                setRating(givenRating)
+                                            }
+                                        />
+                                    )
+                                })}
+                            </div>
                             <textarea
-                                type='text'
-                                className='mb-5 block min-h-[180px] w-full rounded border-2 border-neutral-500 bg-transparent px-3 py-2 font-medium leading-[2.15] text-white caret-primary outline-none focus:border-primary motion-reduce:transition-none'
-                                placeholder='Share your idea...'
+                                type="text"
+                                className="mb-5 block min-h-[180px] w-full rounded border-2 border-neutral-500 bg-transparent px-3 py-2 font-medium leading-[2.15] text-white caret-primary outline-none focus:border-primary motion-reduce:transition-none"
+                                placeholder="Share your idea..."
                                 spellCheck={false}
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                             />
                             <button
-                                className='rounded bg-gradient-main px-8 py-2 font-medium uppercase text-white hover:opacity-90 lg:w-full'
-                                type='submit'
+                                className="rounded bg-gradient-main px-8 py-2 font-medium uppercase text-white hover:opacity-90 lg:w-full"
+                                type="submit"
                             >
                                 {isLoading ? (
                                     <FontAwesomeIcon
                                         icon={faRotate}
-                                        className='animate-spin'
+                                        className="animate-spin"
                                     />
                                 ) : (
                                     <FontAwesomeIcon icon={faPaperPlane} />
                                 )}
-                                <span className='ml-3'>Post</span>
+                                <span className="ml-3">Post</span>
                             </button>
                         </form>
                     </div>
                 ) : (
-                    <div className='flex flex-col items-center gap-5'>
-                        <h2 className='px-5 text-center text-lg font-semibold text-white'>
+                    <div className="flex flex-col items-center gap-5">
+                        <h2 className="px-5 text-center text-lg font-semibold text-white">
                             You must be logged in to post a comment!
                         </h2>
                         <button
-                            className='rounded bg-gradient-main px-5 py-2 font-medium uppercase text-white hover:opacity-90 lg:px-8'
+                            className="rounded bg-gradient-main px-5 py-2 font-medium uppercase text-white hover:opacity-90 lg:px-8"
                             onClick={() => dispatch(setIsAuthModalOpen(true))}
                         >
                             Sign In
@@ -213,39 +237,56 @@ const ReviewItem = ({ review, handleRemoveReviewFromUI }) => {
     }
 
     return (
-        <div className='mb-5 mr-5 flex gap-5 rounded p-5 text-white last:mb-0 hover:bg-[#212121]'>
+        <div className="mb-5 mr-5 flex gap-5 rounded p-5 text-white last:mb-0 hover:bg-[#212121]">
             <CircularNameAvatar name={review.user.fullName} />
 
-            <div className='flex-1'>
-                <div className='flex items-center justify-between'>
+            <div className="flex-1">
+                <div className="flex items-center justify-between">
                     <div>
-                        <h6 className='mb-1 text-lg font-semibold'>
+                        <h6 className="mb-1 text-lg font-semibold">
                             {review.user.fullName}
                         </h6>
-                        <p className='text-sm font-medium text-secondary'>
+                        <p className="text-sm font-medium text-secondary">
                             {formatDateTimeString(review.createdAt)}
                         </p>
                     </div>
 
                     {user && user._id === review.user._id && (
                         <button
-                            className='rounded bg-gradient-main px-5 py-2 font-medium uppercase text-white hover:opacity-90 lg:px-8'
+                            className="rounded bg-gradient-main px-5 py-2 font-medium uppercase text-white hover:opacity-90 lg:px-8"
                             onClick={handleRemoveReviewFromDB}
                         >
                             {isLoading ? (
                                 <FontAwesomeIcon
                                     icon={faRotate}
-                                    className='animate-spin'
+                                    className="animate-spin"
                                 />
                             ) : (
                                 <FontAwesomeIcon icon={faTrash} />
                             )}
-                            <span className='ml-3'>Remove</span>
+                            <span className="ml-3">Remove</span>
                         </button>
                     )}
                 </div>
 
-                <p className='mt-4'>{review.content}</p>
+                <div className="my-4 flex gap-2">
+                    {[...Array(10)].map((item, index) => {
+                        const givenRating = index + 1
+                        return (
+                            <FontAwesomeIcon
+                                key={index}
+                                icon={faStar}
+                                className={`${
+                                    givenRating < review?.rating ||
+                                    givenRating === review?.rating
+                                        ? 'text-primary'
+                                        : 'text-gray-200'
+                                }`}
+                            />
+                        )
+                    })}
+                </div>
+                <p className="mt-4">{review.content}</p>
             </div>
         </div>
     )

@@ -4,20 +4,20 @@ const VoucherSchema = new Schema(
     {
         groupName: {
             type: String,
-            require: true
+            required: true
         },
         code: {
             type: String,
-            require: true
+            required: true
         },
         amount: {
             type: Number,
-            require: true
+            required: true
         },
         type: {
             type: String,
             enum: ['PERCENT', 'NUMBER'],
-            require: true
+            required: true
         },
         quantity: Number,
         description: String,
