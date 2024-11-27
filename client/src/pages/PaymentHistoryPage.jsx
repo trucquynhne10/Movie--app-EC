@@ -5,6 +5,7 @@ import { setIsGlobalLoading } from '../redux/slices/appSlice'
 import useTitle from '../hooks/useTitle'
 import moment from 'moment'
 import { Link } from 'react-router-dom'
+import useBodyBgColor from '../hooks/useBodyBgColor'
 
 const PaymentHistory = () => {
     const dispatch = useDispatch()
@@ -13,6 +14,7 @@ const PaymentHistory = () => {
 
     // Load page
     useTitle('FlqCine | Payment History')
+    useBodyBgColor('#101010')
     useEffect(() => {
         const fetchData = async () => {
             try {

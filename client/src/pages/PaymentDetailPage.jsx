@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setIsGlobalLoading } from '../redux/slices/appSlice'
 import useTitle from '../hooks/useTitle'
 import moment from 'moment'
+import useBodyBgColor from '../hooks/useBodyBgColor'
 
 const PaymentDetailPage = () => {
     const { orderId } = useParams()
@@ -15,6 +16,7 @@ const PaymentDetailPage = () => {
 
     // Load page
     useTitle('FlqCine | Payment Detail')
+    useBodyBgColor('#101010')
     useEffect(() => {
         const fetchData = async () => {
             dispatch(setIsGlobalLoading(true))
