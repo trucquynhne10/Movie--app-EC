@@ -1,4 +1,5 @@
 const Favorite = require('../models/Favorite')
+const recommendService = require('../services/recommendService')
 
 const DEFAULT_SERVER_ERROR_MSG = 'Oops! Something wrong!'
 
@@ -60,6 +61,22 @@ const favoriteController = {
             })
 
             res.status(200).json({ data: favorites })
+        } catch (err) {
+            res.status(500).json({
+                message: err.message ?? DEFAULT_SERVER_ERROR_MSG
+            })
+        }
+    },
+
+    getUserRecommendedFilms: async (req, res) => {
+        try {
+            const language = req.query.language ?? 'en-US'
+            const films = await recommendService.fetchPredictSVD(
+                req.userId,
+                language
+            )
+
+            res.status(200).json({ data: films })
         } catch (err) {
             res.status(500).json({
                 message: err.message ?? DEFAULT_SERVER_ERROR_MSG

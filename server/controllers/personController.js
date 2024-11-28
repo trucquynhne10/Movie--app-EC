@@ -6,7 +6,12 @@ const personController = {
     getPersonMedias: async (req, res) => {
         try {
             const { personId } = req.params
-            const response = await tmdbService.getPersonMedias({ personId })
+            const language = req.query.language ?? 'en-US'
+
+            const response = await tmdbService.getPersonMedias({
+                personId,
+                language
+            })
 
             res.status(200).json({ data: response?.data })
         } catch (err) {
@@ -19,7 +24,12 @@ const personController = {
     getPersonDetail: async (req, res) => {
         try {
             const { personId } = req.params
-            const response = await tmdbService.getPersonDetail({ personId })
+            const language = req.query.language ?? 'en-US'
+
+            const response = await tmdbService.getPersonDetail({
+                personId,
+                language
+            })
 
             res.status(200).json({ data: response?.data })
         } catch (err) {

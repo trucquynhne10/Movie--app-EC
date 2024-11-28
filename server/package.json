@@ -10,6 +10,7 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
+        "@bull-board/api": "^6.5.3",
         "@bull-board/express": "^6.5.3",
         "axios": "^1.4.0",
         "bcrypt": "^5.1.0",

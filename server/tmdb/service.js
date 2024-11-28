@@ -2,15 +2,27 @@ const axiosIns = require('../libs/axios')
 const tmdbEndpoints = require('./endpoints')
 
 const tmdbService = {
-    getMediaList: async ({ mediaType, mediaCategory, page }) =>
+    getMediaList: async ({
+        mediaType,
+        mediaCategory,
+        page,
+        language = 'en-US'
+    }) =>
         await axiosIns.get(
-            tmdbEndpoints.mediaList({ mediaType, mediaCategory, page })
+            tmdbEndpoints.mediaList({
+                mediaType,
+                mediaCategory,
+                page,
+                language
+            })
         ),
 
-    getMediaDetail: async ({ mediaType, mediaId }) =>
-        await axiosIns.get(tmdbEndpoints.mediaDetail({ mediaType, mediaId })),
+    getMediaDetail: async ({ mediaType, mediaId, language = 'en-US' }) =>
+        await axiosIns.get(
+            tmdbEndpoints.mediaDetail({ mediaType, mediaId, language })
+        ),
 
-    getMediaGenres: async ({ mediaType, language }) =>
+    getMediaGenres: async ({ mediaType, language = 'en-US' }) =>
         await axiosIns.get(tmdbEndpoints.mediaGenres({ mediaType, language })),
 
     getMediaCredits: async ({ mediaType, mediaId }) =>
@@ -22,23 +34,23 @@ const tmdbService = {
     getMediaImages: async ({ mediaType, mediaId }) =>
         await axiosIns.get(tmdbEndpoints.mediaImages({ mediaType, mediaId })),
 
-    getMediaRecommend: async ({ mediaType, mediaId }) =>
+    getMediaRecommend: async ({ mediaType, mediaId, language = 'en-US' }) =>
         await axiosIns.get(
-            tmdbEndpoints.mediaRecommend({ mediaType, mediaId })
+            tmdbEndpoints.mediaRecommend({ mediaType, mediaId, language })
         ),
 
-    getMediaSearch: async ({ mediaType, query, page }) =>
+    getMediaSearch: async ({ mediaType, query, page, language = 'en-US' }) =>
         await axiosIns.get(
-            tmdbEndpoints.mediaSearch({ mediaType, query, page })
+            tmdbEndpoints.mediaSearch({ mediaType, query, page, language })
         ),
 
-    getPersonDetail: async ({ personId }) =>
-        await axiosIns.get(tmdbEndpoints.personDetail({ personId })),
+    getPersonDetail: async ({ personId, language = 'en-US' }) =>
+        await axiosIns.get(tmdbEndpoints.personDetail({ personId, language })),
 
-    getPersonMedias: async ({ personId }) =>
-        await axiosIns.get(tmdbEndpoints.personMedias({ personId })),
+    getPersonMedias: async ({ personId, language = 'en-US' }) =>
+        await axiosIns.get(tmdbEndpoints.personMedias({ personId, language })),
 
-    getLimitedList: async ({ page, language }) =>
+    getLimitedList: async ({ page, language = 'en-US' }) =>
         await axiosIns.get(tmdbEndpoints.limitedList({ page, language }))
 }
 

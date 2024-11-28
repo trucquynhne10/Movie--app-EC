@@ -8,11 +8,11 @@ const generateURL = (endpoint, queryParams) => {
 }
 
 const tmdbEndpoints = {
-    mediaList: ({ mediaType, mediaCategory, page }) =>
-        generateURL(`${mediaType}/${mediaCategory}`, { page }),
+    mediaList: ({ mediaType, mediaCategory, page, language }) =>
+        generateURL(`${mediaType}/${mediaCategory}`, { page, language }),
 
-    mediaDetail: ({ mediaType, mediaId }) =>
-        generateURL(`${mediaType}/${mediaId}`),
+    mediaDetail: ({ mediaType, mediaId, language }) =>
+        generateURL(`${mediaType}/${mediaId}`, { language }),
 
     mediaGenres: ({ mediaType, language }) =>
         generateURL(`genre/${mediaType}/list`, { language }),
@@ -23,19 +23,20 @@ const tmdbEndpoints = {
     mediaVideos: ({ mediaType, mediaId }) =>
         generateURL(`${mediaType}/${mediaId}/videos`),
 
-    mediaRecommend: ({ mediaType, mediaId }) =>
-        generateURL(`${mediaType}/${mediaId}/recommendations`),
+    mediaRecommend: ({ mediaType, mediaId, language }) =>
+        generateURL(`${mediaType}/${mediaId}/recommendations`, { language }),
 
     mediaImages: ({ mediaType, mediaId }) =>
         generateURL(`${mediaType}/${mediaId}/images`),
 
-    mediaSearch: ({ mediaType, query, page }) =>
-        generateURL(`search/${mediaType}`, { query, page }),
+    mediaSearch: ({ mediaType, query, page, language }) =>
+        generateURL(`search/${mediaType}`, { query, page, language }),
 
-    personDetail: ({ personId }) => generateURL(`person/${personId}`),
+    personDetail: ({ personId, language }) =>
+        generateURL(`person/${personId}`, { language }),
 
-    personMedias: ({ personId }) =>
-        generateURL(`person/${personId}/combined_credits`),
+    personMedias: ({ personId, language }) =>
+        generateURL(`person/${personId}/combined_credits`, { language }),
 
     limitedList: ({ page, language }) =>
         generateURL(`list/${process.env.DEFAULT_LIST_ID}`, { page, language })
