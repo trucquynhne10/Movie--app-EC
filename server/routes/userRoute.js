@@ -11,6 +11,11 @@ router.post('/change-password', verifyJWT, userController.changePassword)
 router.get('/info', verifyJWT, userController.getInfo)
 
 router.get('/favorites', verifyJWT, favoriteController.getUserFavorites)
+router.get(
+    '/recommended-films',
+    verifyJWT,
+    favoriteController.getUserRecommendedFilms
+)
 router.post('/favorites', verifyJWT, favoriteController.addToFavorite)
 router.delete(
     '/favorites/:favoriteId',
