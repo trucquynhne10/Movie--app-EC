@@ -52,7 +52,7 @@ const MediaDetailPage = () => {
             try {
                 dispatch(setIsGlobalLoading(true))
                 const { data } = await axiosPrivateIns.get(
-                    `${mediaType}/detail/${mediaId}`
+                    `${mediaType}/detail/${mediaId}?language=vi-VN`
                 )
 
                 setMedia(data.data)
@@ -145,20 +145,20 @@ const MediaDetailPage = () => {
     }
 
     return (
-        <div className='-mt-[72px]'>
+        <div className="-mt-[72px]">
             <BackgroundPoster
                 posterPath={tmdbConfig.backdropPath(
                     media.backdrop_path || media.poster_path
                 )}
             />
 
-            <main className='mx-auto max-w-[1366px] px-4'>
+            <main className="mx-auto max-w-[1366px] px-4">
                 {/* Media content */}
-                <div className='-mt-40 pb-[75px] lg:-mt-60 xl:-mt-80'>
-                    <div className='flex flex-col md:flex-row'>
-                        <div className='mx-auto mb-8 w-[70%] sm:w-1/2 md:ml-0 md:mr-8 md:w-2/5'>
+                <div className="-mt-40 pb-[75px] lg:-mt-60 xl:-mt-80">
+                    <div className="flex flex-col md:flex-row">
+                        <div className="mx-auto mb-8 w-[70%] sm:w-1/2 md:ml-0 md:mr-8 md:w-2/5">
                             <div
-                                className='rounded bg-cover bg-center pt-[140%]'
+                                className="rounded bg-cover bg-center pt-[140%]"
                                 style={{
                                     backgroundImage: `url(${tmdbConfig.backdropPath(
                                         media.poster_path || media.backdrop_path
@@ -167,40 +167,40 @@ const MediaDetailPage = () => {
                             ></div>
                         </div>
 
-                        <div className='flex h-full w-full flex-col justify-center text-white md:w-2/3'>
-                            <h4 className='mb-5 text-3xl font-medium md:text-5xl md:leading-[1.3] lg:text-6xl lg:leading-[1.3]'>
+                        <div className="flex h-full w-full flex-col justify-center text-white md:w-2/3">
+                            <h4 className="mb-5 text-3xl font-medium md:text-5xl md:leading-[1.3] lg:text-6xl lg:leading-[1.3]">
                                 {media.title || media.name}
                             </h4>
-                            <span className='mb-3 font-medium uppercase text-secondary'>
+                            <span className="mb-3 font-medium uppercase text-secondary">
                                 {getGenresString(',')}
                             </span>
                             {media.overview && (
-                                <p className='mb-3'>{media.overview}</p>
+                                <p className="mb-3">{media.overview}</p>
                             )}
-                            <p className='mb-3'>
+                            <p className="mb-3">
                                 Original language:{' '}
-                                <span className='uppercase'>
+                                <span className="uppercase">
                                     {media.original_language}
                                 </span>
                             </p>
-                            <p className='mb-5 xl:mb-10'>
+                            <p className="mb-5 xl:mb-10">
                                 Released data:{' '}
                                 {formatDateString(media.release_date)}
                             </p>
-                            <div className='mb-5 flex items-center gap-5 xl:mb-10'>
+                            <div className="mb-5 flex items-center gap-5 xl:mb-10">
                                 <CircularProgress
                                     size={60}
                                     value={media.vote_average}
                                 />
                                 {media?.videos?.results?.length > 0 && (
                                     <button
-                                        className='rounded-full bg-gradient-main px-6 py-[10px] text-[14px] font-medium uppercase tracking-wider text-white hover:opacity-90'
+                                        className="rounded-full bg-gradient-main px-6 py-[10px] text-[14px] font-medium uppercase tracking-wider text-white hover:opacity-90"
                                         onClick={() =>
                                             videoSectionRef.current.scrollIntoView()
                                         }
                                     >
                                         <FontAwesomeIcon icon={faPlay} />
-                                        <span className='ml-3'>
+                                        <span className="ml-3">
                                             Play Trailer
                                         </span>
                                     </button>
@@ -212,7 +212,7 @@ const MediaDetailPage = () => {
                                 />
                             </div>
                             <CastSlider
-                                heading='Casts'
+                                heading="Casts"
                                 casts={media.credits.cast}
                             />
                         </div>
@@ -221,9 +221,9 @@ const MediaDetailPage = () => {
 
                 {/* Media backdrops */}
                 {media.images.backdrops.length > 0 && (
-                    <div className='pb-[75px]'>
+                    <div className="pb-[75px]">
                         <BackdropSlider
-                            heading='Backdrops'
+                            heading="Backdrops"
                             backdrops={[...media.images.backdrops].splice(
                                 0,
                                 10
@@ -235,11 +235,11 @@ const MediaDetailPage = () => {
                 {/* Media videos */}
                 {media?.videos?.results?.length > 0 && (
                     <div
-                        className='scroll-mt-[72px] pb-[75px]'
+                        className="scroll-mt-[72px] pb-[75px]"
                         ref={videoSectionRef}
                     >
                         <VideoSlider
-                            heading='Trailers'
+                            heading="Trailers"
                             videos={[...media.videos.results].splice(0, 5)}
                         />
                     </div>
@@ -247,18 +247,18 @@ const MediaDetailPage = () => {
 
                 {/* Media posters */}
                 {media.images.posters.length > 0 && (
-                    <div className='pb-[75px]'>
+                    <div className="pb-[75px]">
                         <PosterSlider
-                            heading='Posters'
+                            heading="Posters"
                             posters={[...media.images.posters].splice(0, 10)}
                         />
                     </div>
                 )}
 
                 {/* Media reviews */}
-                <div className='pb-[75px]'>
+                <div className="pb-[75px]">
                     <MediaReviews
-                        heading='Comments'
+                        heading="Comments"
                         mediaType={mediaType}
                         media={media}
                         reviews={media.reviews.filter(
@@ -268,19 +268,19 @@ const MediaDetailPage = () => {
                 </div>
 
                 {/* Media recommendations */}
-                <div className='pb-[75px]'>
+                <div className="pb-[75px]">
                     {media.recommend.length > 0 && (
                         <MediaSlider
-                            heading='You May Also Like'
+                            heading="Similar Films"
                             mediaType={mediaType}
                             mediaData={media.recommend}
                         />
                     )}
                     {media.recommend.length === 0 && (
                         <MediaSlider
-                            heading='You May Also Like'
+                            heading="Similar Films"
                             mediaType={mediaType}
-                            mediaCategory='top_rated'
+                            mediaCategory="top_rated"
                         />
                     )}
                 </div>

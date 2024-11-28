@@ -1,9 +1,6 @@
 const axios = require('axios')
 const tmdbService = require('../tmdb/service')
 
-/**
- * Hàm xử lý lấy chi tiết phim từ TMDB API
- */
 const getFilmDetailsFromIds = async (ids, language) => {
     const filmDetailsPromises = ids.map((id) =>
         tmdbService
@@ -22,19 +19,14 @@ const getFilmDetailsFromIds = async (ids, language) => {
             })
     )
 
-    // Chờ tất cả các promise hoàn thành
     const filmDetails = await Promise.all(filmDetailsPromises)
-    return filmDetails.filter((film) => film !== null) // Lọc ra các phim hợp lệ
+    return filmDetails.filter((film) => film !== null) 
 }
 
 const MODEL_SERVER_ENDPOINT = 'http://127.0.0.1:5002'
 
-/**
- * Hàm lấy danh sách phim được đề xuất
- */
 const fetchPredictSVD = async (userId, language) => {
     try {
-        // Gửi yêu cầu đến Flask API để lấy danh sách ID
         const { data: recommendedIds } = await axios.get(
             `${MODEL_SERVER_ENDPOINT}/predictSVD`,
             {
@@ -48,7 +40,6 @@ const fetchPredictSVD = async (userId, language) => {
             return []
         }
 
-        // Lấy chi tiết phim từ TMDB API
         const films = await getFilmDetailsFromIds(recommendedIds, language)
         return films
     } catch (error) {
@@ -57,9 +48,6 @@ const fetchPredictSVD = async (userId, language) => {
     }
 }
 
-/**
- * Hàm lấy danh sách phim tương tự
- */
 const fetchSimilarFilms = async (filmId, filmTitle, filmGenres, language) => {
     try {
         const { data: similarFilmIds } = await axios.get(
@@ -77,7 +65,6 @@ const fetchSimilarFilms = async (filmId, filmTitle, filmGenres, language) => {
             return []
         }
 
-        // Lấy chi tiết phim từ TMDB API
         const films = await getFilmDetailsFromIds(similarFilmIds, language)
         return films
     } catch (error) {

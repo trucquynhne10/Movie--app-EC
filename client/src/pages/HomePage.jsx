@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import useTitle from '../hooks/useTitle'
 import HeroSlider from '../components/ui/HeroSlider'
 import MediaSlider from '../components/ui/MediaSlider'
+import YouMayAlsoLike from '../components/ui/YouMayAlsoLike'
 
 const HomePage = () => {
     useTitle('FlqCine | Home')
@@ -10,29 +11,31 @@ const HomePage = () => {
     }, [])
 
     return (
-        <div className='-mt-[72px]'>
-            <HeroSlider mediaType='movie' mediaCategory='popular' />
+        <div className="-mt-[72px]">
+            <HeroSlider mediaType="movie" mediaCategory="popular" />
 
-            <main className='mx-auto max-w-[1366px] bg-white px-4 py-[75px]'>
+            <main className="mx-auto max-w-[1366px] bg-white px-4 py-[75px]">
+                <YouMayAlsoLike />
+
                 <MediaSlider
-                    heading='popular movies'
-                    mediaType='movie'
-                    mediaCategory='popular'
+                    heading="popular movies"
+                    mediaType="movie"
+                    mediaCategory="popular"
                 />
                 <MediaSlider
-                    heading='popular series'
-                    mediaType='tv'
-                    mediaCategory='popular'
+                    heading="popular series"
+                    mediaType="tv"
+                    mediaCategory="popular"
                 />
                 <MediaSlider
-                    heading='top rated movies'
-                    mediaType='movie'
-                    mediaCategory='top_rated'
+                    heading="top rated movies"
+                    mediaType="movie"
+                    mediaCategory="top_rated"
                 />
                 <MediaSlider
-                    heading='top rated series'
-                    mediaType='tv'
-                    mediaCategory='top_rated'
+                    heading="top rated series"
+                    mediaType="tv"
+                    mediaCategory="top_rated"
                 />
             </main>
         </div>

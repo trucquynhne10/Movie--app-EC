@@ -23,7 +23,7 @@ const HeroSlider = ({ mediaType, mediaCategory }) => {
         const getMovies = async () => {
             try {
                 const { data } = await axiosPublicIns.get(
-                    `${mediaType}/${mediaCategory}?page=1`
+                    `${mediaType}/${mediaCategory}?page=1&language=vi-VN`
                 )
 
                 setMovies(data.data.results)
@@ -40,7 +40,9 @@ const HeroSlider = ({ mediaType, mediaCategory }) => {
         const getGenres = async () => {
             try {
                 dispatch(setIsGlobalLoading(true))
-                const { data } = await axiosPublicIns.get(`${mediaType}/genres`)
+                const { data } = await axiosPublicIns.get(
+                    `${mediaType}/genres?language=vi-VN`
+                )
 
                 setGenres(data.data.genres)
                 getMovies()
@@ -85,7 +87,7 @@ const HeroSlider = ({ mediaType, mediaCategory }) => {
                 {movies.map((movie, index) => (
                     <SwiperSlide key={index}>
                         <div
-                            className='bg-cover bg-top pt-[130%] sm:pt-[80%] md:pt-[60%] lg:pt-[55%] xl:pt-[45%]'
+                            className="bg-cover bg-top pt-[130%] sm:pt-[80%] md:pt-[60%] lg:pt-[55%] xl:pt-[45%]"
                             style={{
                                 backgroundImage: `url(${tmdbConfig.backdropPath(
                                     movie.backdrop_path || movie.poster_path
@@ -93,28 +95,28 @@ const HeroSlider = ({ mediaType, mediaCategory }) => {
                             }}
                         ></div>
 
-                        <div className='pointer-events-none absolute inset-0 bg-gradient-dark-to-r'></div>
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-dark-to-r"></div>
 
-                        <div className='absolute inset-0 px-5 md:px-10 lg:px-[100px] xl:px-40'>
-                            <div className='flex h-full w-full flex-col justify-center text-white lg:w-2/3'>
-                                <span className='font-medium uppercase text-secondary'>
+                        <div className="absolute inset-0 px-5 md:px-10 lg:px-[100px] xl:px-40">
+                            <div className="flex h-full w-full flex-col justify-center text-white lg:w-2/3">
+                                <span className="font-medium uppercase text-secondary">
                                     {getGenresString(movie.genre_ids)}
                                 </span>
-                                <h4 className='mb-5 line-clamp-2 text-ellipsis break-words text-3xl font-medium md:text-5xl md:leading-[1.3] lg:text-5xl lg:leading-[1.3] xl:text-6xl'>
+                                <h4 className="mb-5 line-clamp-2 text-ellipsis break-words text-3xl font-medium md:text-5xl md:leading-[1.3] lg:text-5xl lg:leading-[1.3] xl:text-6xl">
                                     {movie.title || movie.name}
                                 </h4>
                                 {movie.overview && (
-                                    <p className='mb-5 line-clamp-3 text-ellipsis break-words'>
+                                    <p className="mb-5 line-clamp-3 text-ellipsis break-words">
                                         {movie.overview}
                                     </p>
                                 )}
-                                <div className='flex items-center gap-5'>
+                                <div className="flex items-center gap-5">
                                     <CircularProgress
                                         size={60}
                                         value={movie.vote_average}
                                     />
                                     <button
-                                        className='rounded-full bg-gradient-main px-6 py-[10px] text-[14px] font-medium uppercase tracking-wider text-white hover:opacity-90'
+                                        className="rounded-full bg-gradient-main px-6 py-[10px] text-[14px] font-medium uppercase tracking-wider text-white hover:opacity-90"
                                         onClick={() =>
                                             navigate(
                                                 `/${mediaType}/${movie.id}`
@@ -122,7 +124,7 @@ const HeroSlider = ({ mediaType, mediaCategory }) => {
                                         }
                                     >
                                         <FontAwesomeIcon icon={faPlay} />
-                                        <span className='ml-3'>
+                                        <span className="ml-3">
                                             Watch Trailer
                                         </span>
                                     </button>

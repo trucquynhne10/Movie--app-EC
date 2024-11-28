@@ -17,7 +17,7 @@ const PersonMediaGrid = ({ heading, personId }) => {
         const getMedias = async () => {
             try {
                 const { data } = await axiosPublicIns.get(
-                    `/person/${personId}/medias`
+                    `/person/${personId}/medias?language=vi-VN`
                 )
 
                 const sortedMedias = data.data.cast.sort(
@@ -56,12 +56,12 @@ const PersonMediaGrid = ({ heading, personId }) => {
     }
 
     return (
-        <div className='flex flex-col'>
+        <div className="flex flex-col">
             <h2 className='relative mb-10 border-b border-[#d8d8d8] pb-5 text-lg font-semibold uppercase text-primary after:absolute after:bottom-[-1px] after:left-0 after:h-1 after:w-[180px] after:bg-gradient-main after:content-[""]'>
                 {heading}
             </h2>
 
-            <div className='grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+            <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {filteredMedias.map((item, index) => (
                     <div key={index}>
                         <MediaItem media={item} mediaType={item.media_type} />
@@ -71,11 +71,11 @@ const PersonMediaGrid = ({ heading, personId }) => {
 
             {filteredMedias.length < medias.length && (
                 <button
-                    className='mt-10 self-center rounded-full bg-gradient-main px-40 py-4 font-medium uppercase tracking-wider text-white hover:opacity-90'
+                    className="mt-10 self-center rounded-full bg-gradient-main px-40 py-4 font-medium uppercase tracking-wider text-white hover:opacity-90"
                     onClick={handleLoadMore}
                 >
                     <FontAwesomeIcon icon={faPhotoFilm} />
-                    <span className='ml-3'>Load More</span>
+                    <span className="ml-3">Load More</span>
                 </button>
             )}
         </div>

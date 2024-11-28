@@ -38,7 +38,7 @@ const MediaListPage = () => {
                 setIsLoading()
 
                 const { data } = await axiosPublicIns.get(
-                    `${mediaType}/${currentCategory}?page=${currentPage}`
+                    `${mediaType}/${currentCategory}?page=${currentPage}&language=vi-VN`
                 )
 
                 setMedias((prev) =>
@@ -73,22 +73,22 @@ const MediaListPage = () => {
     const handleLoadMore = () => setCurrentPage((prev) => prev + 1)
 
     return (
-        <div className='-mt-[72px]'>
+        <div className="-mt-[72px]">
             <HeroSlider mediaType={mediaType} mediaCategory={currentCategory} />
 
-            <main className='mx-auto flex max-w-[1366px] flex-col bg-white px-4 py-[75px]'>
+            <main className="mx-auto flex max-w-[1366px] flex-col bg-white px-4 py-[75px]">
                 <div className='relative mb-10 flex items-center justify-between border-b border-[#d8d8d8] pb-5 text-lg font-semibold uppercase text-primary after:absolute after:bottom-[-1px] after:left-0 after:h-1 after:w-[180px] after:bg-gradient-main after:content-[""]'>
                     <span>
                         {mediaType === 'movie' ? 'Movies' : 'TV Series'}
                     </span>
-                    <div className='flex gap-8'>
+                    <div className="flex gap-8">
                         {MEDIA_CATEGORIES_BTN.map((item) => (
                             <div
                                 key={item.value}
-                                className='flex items-center gap-2'
+                                className="flex items-center gap-2"
                             >
                                 <input
-                                    type='radio'
+                                    type="radio"
                                     className="relative h-5 w-5 appearance-none rounded-full border-2 border-solid border-[#717171] outline-none after:absolute after:left-1/2 after:top-1/2 after:h-[0.625rem] after:w-[0.625rem] after:rounded-full after:content-[''] after:[transform:translate(-50%,-50%)] checked:border-primary checked:after:bg-primary hover:cursor-pointer"
                                     value={item.value}
                                     checked={currentCategory === item.value}
@@ -99,7 +99,7 @@ const MediaListPage = () => {
                                 />
                                 <label
                                     htmlFor={item.value}
-                                    className='inline-block pl-[0.15rem] text-lg font-medium uppercase text-[#717171] hover:cursor-pointer'
+                                    className="inline-block pl-[0.15rem] text-lg font-medium uppercase text-[#717171] hover:cursor-pointer"
                                 >
                                     {item.label}
                                 </label>
@@ -111,22 +111,22 @@ const MediaListPage = () => {
                 <MediaGrid medias={medias} mediaType={mediaType} />
 
                 <button
-                    className='mt-10 self-center rounded-full bg-gradient-main px-40 py-4 font-medium uppercase tracking-wider text-white hover:opacity-90'
+                    className="mt-10 self-center rounded-full bg-gradient-main px-40 py-4 font-medium uppercase tracking-wider text-white hover:opacity-90"
                     onClick={handleLoadMore}
                 >
                     {isLoading ? (
                         <FontAwesomeIcon
                             icon={faRotate}
-                            size='xl'
-                            className='animate-spin'
+                            size="xl"
+                            className="animate-spin"
                         />
                     ) : (
                         <FontAwesomeIcon
                             icon={mediaType === 'movie' ? faPhotoFilm : faTv}
-                            size='xl'
+                            size="xl"
                         />
                     )}
-                    <span className='ml-5'>Load More</span>
+                    <span className="ml-5">Load More</span>
                 </button>
             </main>
         </div>

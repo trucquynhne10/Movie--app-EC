@@ -22,7 +22,7 @@ const MediaSlider = ({
             dispatch(setIsGlobalLoading(true))
             try {
                 const { data } = await axiosPublicIns.get(
-                    `${mediaType}/${mediaCategory}?page=1`
+                    `${mediaType}/${mediaCategory}?page=1&language=vi-VN`
                 )
 
                 setMedias(data.data.results)
